@@ -1,0 +1,3 @@
+http://stackoverflow.com/questions/34679023/how-to-create-link-to-folder-in-navigation-pane-of-windows-10-explorer-programma
+
+https://www.codeproject.com/Tips/1116313/Creating-a-Link-in-the-Left-Pane-of-the-File-Explo
