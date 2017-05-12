@@ -16,7 +16,7 @@ namespace MailStorage
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new MailStorage());
+            Application.Run(new LoginWindow());
         }
     }
 }
