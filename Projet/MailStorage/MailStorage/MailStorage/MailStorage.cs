@@ -23,12 +23,17 @@ namespace MailStorage
     {
         // Window interaction variables
         public const int WM_NCLBUTTONDOWN = 0xA1;
+
         public const int HT_CAPTION = 0x2;
 
         [System.Runtime.InteropServices.DllImportAttribute("user32.dll")]
         public static extern int SendMessage(IntPtr hWnd, int Msg, int wParam, int lParam);
+
         [System.Runtime.InteropServices.DllImportAttribute("user32.dll")]
         public static extern bool ReleaseCapture();
+
+        // Class variables declaration
+        private Task globalRefresh;
 
         /// <summary>
         /// Class constructor
@@ -41,21 +46,8 @@ namespace MailStorage
             // Adds this window to the globals
             Globals.mainWindow = this;
 
-            FilesManager.UpdateLocalFiles();
-
-            foreach (var variable in Globals.LOCAL_FILES)
-            {
-                MessageBox.Show(variable.filePath);
-            }
-
-            MessageBox.Show("Update");
-
-            FilesManager.UpdateLocalFiles();
-
-            foreach (var variable in Globals.LOCAL_FILES)
-            {
-                MessageBox.Show(variable.filePath);
-            }
+            // Updates the storage size
+            UpdateMailboxSpace();
         }
 
         /// <summary>
@@ -131,6 +123,48 @@ namespace MailStorage
             // Shows the application
             this.Show();
             this.WindowState = FormWindowState.Normal;
+        }
+
+        /// <summary>
+        /// Updates the mailbox storage size elements
+        /// </summary>
+        private void UpdateMailboxSpace()
+        {
+            // Get the mailbox informations
+            var mailQuota = MailManager.GetMailboxQuota();
+
+            // Updates the title
+            spaceLabel.Text = "Espace disponible - " + Math.Round((float)mailQuota.CurrentStorageSize / 1024 / 1024, 2) + " GB / " + Math.Round((float)mailQuota.StorageLimit / 1024 / 1024, 2) + " GB";
+
+            // Updates the label (0 - 598)
+            spaceValueLabel.MinimumSize = new Size((int)(mailQuota.CurrentStorageSize * 598 / mailQuota.StorageLimit), 23);
+        }
+
+        /// <summary>
+        /// Refreshes the local and remote files each x seconds
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void RefreshFiles(object sender, EventArgs e)
+        {
+            // returns if the task is already running
+            if (globalRefresh != null && !globalRefresh.IsCompleted) return;
+
+            // Updates the storage size
+            UpdateMailboxSpace();
+
+            // Starts the task
+            globalRefresh = Task.Factory.StartNew(() =>
+            {
+                // Updates the lists
+                FilesManager.UpdateLocalFiles();
+                FilesManager.UpdateRemoteFiles();
+
+                // Updates the files
+                FilesManager.AddLocalFilesToMailBox();
+                FilesManager.DeleteRemotesFilesFromLocal();
+                
+            });
         }
     }
 }

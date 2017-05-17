@@ -42,6 +42,7 @@
             this.spaceLabel = new System.Windows.Forms.Label();
             this.spaceBackLabel = new System.Windows.Forms.Label();
             this.spaceValueLabel = new System.Windows.Forms.Label();
+            this.filesRefresh = new System.Windows.Forms.Timer(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.barPictureBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.mailPictureBox)).BeginInit();
             this.SuspendLayout();
@@ -172,7 +173,7 @@
             this.spaceLabel.Name = "spaceLabel";
             this.spaceLabel.Size = new System.Drawing.Size(600, 50);
             this.spaceLabel.TabIndex = 9;
-            this.spaceLabel.Text = "Espace disponible - 5.4 GB";
+            this.spaceLabel.Text = "Espace disponible - 0 GB / 0 GB";
             this.spaceLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // spaceBackLabel
@@ -198,11 +199,17 @@
             this.spaceValueLabel.Font = new System.Drawing.Font("Berlin Sans FB", 7.875F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.spaceValueLabel.ForeColor = System.Drawing.Color.DarkTurquoise;
             this.spaceValueLabel.Location = new System.Drawing.Point(51, 686);
-            this.spaceValueLabel.MinimumSize = new System.Drawing.Size(98, 23);
+            this.spaceValueLabel.MinimumSize = new System.Drawing.Size(300, 23);
             this.spaceValueLabel.Name = "spaceValueLabel";
-            this.spaceValueLabel.Size = new System.Drawing.Size(98, 23);
+            this.spaceValueLabel.Size = new System.Drawing.Size(300, 23);
             this.spaceValueLabel.TabIndex = 11;
             this.spaceValueLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // filesRefresh
+            // 
+            this.filesRefresh.Enabled = true;
+            this.filesRefresh.Interval = 5000;
+            this.filesRefresh.Tick += new System.EventHandler(this.RefreshFiles);
             // 
             // MailStorage
             // 
@@ -247,6 +254,7 @@
         private System.Windows.Forms.Label spaceLabel;
         private System.Windows.Forms.Label spaceBackLabel;
         private System.Windows.Forms.Label spaceValueLabel;
+        private System.Windows.Forms.Timer filesRefresh;
     }
 }
 

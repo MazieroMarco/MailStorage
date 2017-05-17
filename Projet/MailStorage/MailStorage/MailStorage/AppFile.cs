@@ -19,19 +19,19 @@ namespace MailStorage
         // Class variables declaration
         public string fileName;
         public string filePath;
-        public string fileUniqueId;
         public DateTime fileCreationDate;
+        public DateTime fileModificationDate;
 
         /// <summary>
         /// Class constructor, creates the file
         /// </summary>
-        public AppFile(string strFileName, string strFilePath, string strFileId, DateTime dtCreationDate)
+        public AppFile(string strFileName, string strFilePath, DateTime dtCreationDate, DateTime dtModificationDate)
         {
             // Sets the variables
             fileName = strFileName;
             filePath = strFilePath;
-            fileUniqueId = strFileId;
             fileCreationDate = dtCreationDate;
+            fileModificationDate = dtModificationDate;
         }
     }
 }

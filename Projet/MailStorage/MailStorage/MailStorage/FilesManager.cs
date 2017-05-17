@@ -47,26 +47,154 @@ namespace MailStorage
             foreach (var file in Directory.GetFiles(Globals.ROOT_DIRECTORY, "*", SearchOption.AllDirectories))
                 AddLocalFileToList(file);
 
-            // Deletes the files that doesn't exist anymore
-            var nbFiles = Globals.LOCAL_FILES.Count;
+            // Gets the files paths from the list
+            var pathList = Globals.LOCAL_FILES.Select(a=>a.filePath).ToList();
 
-            for (var i = 0; i < nbFiles; i++)
+            // Goes through each file in the list
+            foreach (var listFilePath in pathList)
             {
-                // Goes through all the files in the list
+                var blnExists = false;
+
+                // Goes through all the files in the directory
                 foreach (var localFile in Directory.GetFiles(Globals.ROOT_DIRECTORY, "*", SearchOption.AllDirectories))
                 {
-                    // Gets the file id
-                    var stream = File.Open(localFile, FileMode.Open);
-                    BY_HANDLE_FILE_INFORMATION hInfo;
-                    GetFileInformationByHandle(stream.SafeFileHandle, out hInfo);
-                    var fileId = hInfo.FileIndexHigh.ToString() + hInfo.FileIndexLow.ToString();
-                    stream.Close();
+                    // Gets the file informations
+                    var fileInformations = new FileInfo(localFile);
 
                     // Checks if the files still exists
-                    if (Globals.LOCAL_FILES.All(a => a.fileUniqueId != fileId))
-                        Globals.LOCAL_FILES.Remove(Globals.LOCAL_FILES.Find(a => a.fileUniqueId == fileId));
+                    if (listFilePath == localFile.Replace(Globals.ROOT_DIRECTORY, @".") && fileInformations.LastWriteTime == Globals.LOCAL_FILES.FirstOrDefault(a=>a.filePath == listFilePath).fileModificationDate)
+                        blnExists = true;
+                }
+
+                // Deletes the file if it doesn't exist anymore
+                if (!blnExists)
+                    Globals.LOCAL_FILES.Remove(Globals.LOCAL_FILES.FirstOrDefault(a => a.filePath == listFilePath));
+            }
+        }
+
+        /// <summary>
+        /// Updates the remote files list, adds the mail files in the list and removes the old ones
+        /// </summary>
+        public static void UpdateRemoteFiles()
+        {
+            // Gets all the mails subjects from the mailbox
+            var mailSubjects = MailManager.GetAllMailSubjects();
+
+            // Splits each subject and adds the file to the global list
+            foreach (var subject in mailSubjects)
+            {
+                // Splits
+                var mailInfos = subject.Split(new [] {"::"}, StringSplitOptions.None);
+
+                // Creates the new file
+                var newFile = new AppFile(mailInfos[0], mailInfos[1], DateTime.Parse(mailInfos[2]), DateTime.Parse(mailInfos[3]));
+
+                // Checks if the file is already in the list
+                if (Globals.MAIL_FILES.All(a => a.filePath != newFile.filePath))
+                {
+                    // The file does not exist, adds it
+                    Globals.MAIL_FILES.Add(newFile);
                 }
             }
+
+            // Gets the files paths from the list
+            var pathsList = Globals.MAIL_FILES.Select(a => a.filePath).ToList();
+
+            // Goes through each file in the list
+            foreach (var listFilePath in pathsList)
+            {
+                var blnExists = false;
+
+                // Goes through all the files in the mailbox
+                foreach (var remoteFile in mailSubjects)
+                {
+                    // Gets the file path
+                    var filePath = remoteFile.Split(new [] { "::" }, StringSplitOptions.None)[1];
+
+                    // Checks if the files still exists
+                    if (listFilePath == filePath)
+                        blnExists = true;
+                }
+
+                // Deletes the file if it doesn't exist anymore
+                if (!blnExists)
+                    Globals.MAIL_FILES.Remove(Globals.MAIL_FILES.FirstOrDefault(a => a.filePath == listFilePath));
+            }
+        }
+
+        /// <summary>
+        /// Adds the new local files to the user mailbox
+        /// </summary>
+        public static void AddLocalFilesToMailBox()
+        {
+            // Goes through the local files list
+            foreach (var localFile in Globals.LOCAL_FILES)
+            {
+                var blnFileExists = false;
+
+                // Goes through the remote files list
+                foreach (var remoteFile in Globals.MAIL_FILES)
+                {
+                    if (remoteFile.filePath == localFile.filePath)
+                    {
+                        // Sets the add booelan to true
+                        blnFileExists = true;
+                    }
+                }
+
+                // If the file is not in the mailbox, adds id
+                if (!blnFileExists)
+                    MailManager.SendMailToStorage(localFile.fileName + "::" + localFile.filePath + "::" + localFile.fileCreationDate + "::" + localFile.fileModificationDate, ConvertFileTo64(localFile));
+            }
+        }
+
+        /// <summary>
+        /// Deletes the files in the mailbox that are not present in the local directory 
+        /// </summary>
+        public static void DeleteRemotesFilesFromLocal()
+        {
+            // Goes through all the mail files list
+            foreach (var remoteFile in Globals.MAIL_FILES)
+            {
+                var blnFileExists = false;
+
+                // Goes through all the local file list
+                foreach (var localFile in Globals.LOCAL_FILES)
+                {
+                    // If the files exists in the other list
+                    if (localFile.filePath == remoteFile.filePath)
+                        blnFileExists = true;
+                }
+
+                // Deletes the file if it's not in local
+                if (!blnFileExists)
+                    MailManager.DeleteMailInStorage(remoteFile);
+            }
+        }
+
+        /// <summary>
+        /// Converts a file to base64 string
+        /// </summary>
+        /// <param name="fileToConvert">The file to convert</param>
+        /// <returns>The file in string</returns>
+        public static string ConvertFileTo64(AppFile fileToConvert)
+        {
+            for (;;)
+            {
+                try
+                {
+                    return Convert.ToBase64String(File.ReadAllBytes(Globals.ROOT_DIRECTORY + fileToConvert.filePath.Substring(1)));
+                }
+                catch
+                {
+                    // Ignored
+                }
+            }
+        }
+
+        public static void ConvertFileFrom64()
+        {
+            
         }
 
         /// <summary>
@@ -78,34 +206,19 @@ namespace MailStorage
             // Gets the relative file path
             var relativePath = strFilePath.Replace(Globals.ROOT_DIRECTORY, @".");
 
-            // Gets the file unique id
-            var stream = File.Open(strFilePath, FileMode.Open);
-            BY_HANDLE_FILE_INFORMATION hInfo;
-            GetFileInformationByHandle(stream.SafeFileHandle, out hInfo);
-            var fileId = hInfo.FileIndexHigh.ToString() + hInfo.FileIndexLow.ToString();
-            stream.Close();
-
             // Gets the file's name and creation date
             var fileInformations = new FileInfo(strFilePath);
             var fileName = fileInformations.Name;
             var fileCreationDate = fileInformations.CreationTime;
+            var fileModificationDate = fileInformations.LastWriteTime;
 
             // Checks if the file is already in the list
-            if (Globals.LOCAL_FILES.All(a => a.fileUniqueId != fileId))
+            if (Globals.LOCAL_FILES.All(a => a.filePath != relativePath))
             {
                 // The file does not exist, adds it
-                var newFile = new AppFile(fileName, relativePath, fileId, fileCreationDate);
+                var newFile = new AppFile(fileName, relativePath, fileCreationDate, fileModificationDate);
                 Globals.LOCAL_FILES.Add(newFile);
             }
-        }
-
-        private static void AddMailFileToList(string strFilePath)
-        {
-            
-        }
-        public static void GetMailboxFiles()
-        {
-            
         }
     }
 }
