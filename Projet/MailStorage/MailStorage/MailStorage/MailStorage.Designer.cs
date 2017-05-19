@@ -42,9 +42,13 @@
             this.spaceLabel = new System.Windows.Forms.Label();
             this.spaceBackLabel = new System.Windows.Forms.Label();
             this.spaceValueLabel = new System.Windows.Forms.Label();
-            this.filesRefresh = new System.Windows.Forms.Timer(this.components);
+            this.statusPictureBox = new System.Windows.Forms.PictureBox();
+            this.statusBackPictureBox = new System.Windows.Forms.PictureBox();
+            this.windowElementsRefresh = new System.Windows.Forms.Timer(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.barPictureBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.mailPictureBox)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.statusPictureBox)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.statusBackPictureBox)).BeginInit();
             this.SuspendLayout();
             // 
             // barPictureBox
@@ -135,6 +139,7 @@
             this.syncButton.TabIndex = 6;
             this.syncButton.Text = "Synchroniser";
             this.syncButton.UseVisualStyleBackColor = false;
+            this.syncButton.Click += new System.EventHandler(this.SyncButton);
             // 
             // titleLabel
             // 
@@ -156,11 +161,11 @@
             this.statusLabel.Font = new System.Drawing.Font("Berlin Sans FB", 24F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.statusLabel.ForeColor = System.Drawing.Color.DarkGreen;
             this.statusLabel.Location = new System.Drawing.Point(0, 410);
-            this.statusLabel.MinimumSize = new System.Drawing.Size(700, 200);
+            this.statusLabel.MinimumSize = new System.Drawing.Size(500, 200);
             this.statusLabel.Name = "statusLabel";
-            this.statusLabel.Size = new System.Drawing.Size(700, 200);
+            this.statusLabel.Size = new System.Drawing.Size(500, 200);
             this.statusLabel.TabIndex = 8;
-            this.statusLabel.Text = "Status : Activé";
+            this.statusLabel.Text = "Activé";
             this.statusLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // spaceLabel
@@ -173,7 +178,7 @@
             this.spaceLabel.Name = "spaceLabel";
             this.spaceLabel.Size = new System.Drawing.Size(600, 50);
             this.spaceLabel.TabIndex = 9;
-            this.spaceLabel.Text = "Espace disponible - 0 GB / 0 GB";
+            this.spaceLabel.Text = "Espace disponible - Calcul en cours ...";
             this.spaceLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // spaceBackLabel
@@ -199,17 +204,37 @@
             this.spaceValueLabel.Font = new System.Drawing.Font("Berlin Sans FB", 7.875F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.spaceValueLabel.ForeColor = System.Drawing.Color.DarkTurquoise;
             this.spaceValueLabel.Location = new System.Drawing.Point(51, 686);
-            this.spaceValueLabel.MinimumSize = new System.Drawing.Size(300, 23);
+            this.spaceValueLabel.MinimumSize = new System.Drawing.Size(0, 23);
             this.spaceValueLabel.Name = "spaceValueLabel";
-            this.spaceValueLabel.Size = new System.Drawing.Size(300, 23);
+            this.spaceValueLabel.Size = new System.Drawing.Size(0, 23);
             this.spaceValueLabel.TabIndex = 11;
             this.spaceValueLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
-            // filesRefresh
+            // statusPictureBox
             // 
-            this.filesRefresh.Enabled = true;
-            this.filesRefresh.Interval = 5000;
-            this.filesRefresh.Tick += new System.EventHandler(this.RefreshFiles);
+            this.statusPictureBox.BackColor = System.Drawing.Color.SpringGreen;
+            this.statusPictureBox.Image = ((System.Drawing.Image)(resources.GetObject("statusPictureBox.Image")));
+            this.statusPictureBox.Location = new System.Drawing.Point(525, 435);
+            this.statusPictureBox.Name = "statusPictureBox";
+            this.statusPictureBox.Size = new System.Drawing.Size(150, 150);
+            this.statusPictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.statusPictureBox.TabIndex = 12;
+            this.statusPictureBox.TabStop = false;
+            // 
+            // statusBackPictureBox
+            // 
+            this.statusBackPictureBox.BackColor = System.Drawing.Color.SpringGreen;
+            this.statusBackPictureBox.Location = new System.Drawing.Point(500, 410);
+            this.statusBackPictureBox.Name = "statusBackPictureBox";
+            this.statusBackPictureBox.Size = new System.Drawing.Size(200, 200);
+            this.statusBackPictureBox.TabIndex = 13;
+            this.statusBackPictureBox.TabStop = false;
+            // 
+            // windowElementsRefresh
+            // 
+            this.windowElementsRefresh.Enabled = true;
+            this.windowElementsRefresh.Interval = 2000;
+            this.windowElementsRefresh.Tick += new System.EventHandler(this.RefreshWindowElements);
             // 
             // MailStorage
             // 
@@ -217,6 +242,8 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.AliceBlue;
             this.ClientSize = new System.Drawing.Size(700, 750);
+            this.Controls.Add(this.statusPictureBox);
+            this.Controls.Add(this.statusBackPictureBox);
             this.Controls.Add(this.spaceValueLabel);
             this.Controls.Add(this.spaceBackLabel);
             this.Controls.Add(this.spaceLabel);
@@ -235,6 +262,8 @@
             this.Text = "MailStorage";
             ((System.ComponentModel.ISupportInitialize)(this.barPictureBox)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.mailPictureBox)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.statusPictureBox)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.statusBackPictureBox)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -254,7 +283,9 @@
         private System.Windows.Forms.Label spaceLabel;
         private System.Windows.Forms.Label spaceBackLabel;
         private System.Windows.Forms.Label spaceValueLabel;
-        private System.Windows.Forms.Timer filesRefresh;
+        private System.Windows.Forms.PictureBox statusPictureBox;
+        private System.Windows.Forms.PictureBox statusBackPictureBox;
+        private System.Windows.Forms.Timer windowElementsRefresh;
     }
 }
 

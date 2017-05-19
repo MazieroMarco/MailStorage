@@ -25,5 +25,7 @@ namespace MailStorage
 
         public static List<AppFile> LOCAL_FILES = new List<AppFile>();              // The list with all the local files paths
         public static List<AppFile> MAIL_FILES = new List<AppFile>();               // The list with all the remote mail files paths
+
+        public static bool NEED_INITIAL_SYNC = false;        // Used to execute the initial sync in the root folder
     }
 }

@@ -10,7 +10,9 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using Microsoft.Win32.SafeHandles;
+using MimeKit;
 
 namespace MailStorage
 {
@@ -19,24 +21,84 @@ namespace MailStorage
     /// </summary>
     static class FilesManager
     {
-        // Files informations
-        struct BY_HANDLE_FILE_INFORMATION
+        /// <summary>
+        /// Downloads all the mails and create the corresponding files in the root folder
+        /// </summary>
+        public static void InitialSynchronisation()
         {
-            public uint FileAttributes;
-            public System.Runtime.InteropServices.ComTypes.FILETIME CreationTime;
-            public System.Runtime.InteropServices.ComTypes.FILETIME LastAccessTime;
-            public System.Runtime.InteropServices.ComTypes.FILETIME LastWriteTime;
-            public uint VolumeSerialNumber;
-            public uint FileSizeHigh;
-            public uint FileSizeLow;
-            public uint NumberOfLinks;
-            public uint FileIndexHigh;
-            public uint FileIndexLow;
-        }
+            // Checks if there're files in the root folder
+            if (Directory.GetFiles(Globals.ROOT_DIRECTORY, "*", SearchOption.AllDirectories).Length > 0)
+            {
+                // Displays the question message about the files
+                var userChoice = MessageBox.Show("Le dossier racine que vous avez choisi possède déjà des fichiers.\n" +
+                                "Voulez-vous que ces fichiers soient synchronisés avec la boite mail ou supprimés ?\n\n" +
+                                "(Cliquez sur OUI pour synchroniser, sur NON pour les supprimer et sur ANNULER pour quitter l'application)",
+                    "Fichiers dans le dossier racine",
+                    MessageBoxButtons.YesNoCancel, MessageBoxIcon.Warning);
 
-        // Files informatiosn dlls
-        [DllImport("kernel32.dll", SetLastError = true)]
-        private static extern bool GetFileInformationByHandle(SafeFileHandle hFile, out BY_HANDLE_FILE_INFORMATION lpFileInformation);
+                switch (userChoice)
+                {
+                    case DialogResult.No:
+
+                        // Deletes all the files in the root folder
+                        foreach (var file in Directory.GetFiles(Globals.ROOT_DIRECTORY, "*", SearchOption.AllDirectories))
+                        {
+                            // If no root folder, abort
+                            if (!Directory.Exists(Globals.ROOT_DIRECTORY))
+                                return;
+
+                            // Tries to delete the file
+                            try
+                            {
+                                File.Delete(file);
+                            }
+                            catch (Exception e)
+                            {
+                                // Gets the file information
+                                var infos = new FileInfo(file);
+
+                                // Displays the error message
+                                MessageBox.Show("Impossible de supprimer le fichier " + infos.Name + "\n\n" +
+                                                "Erreur : " + e.Message);
+                            }
+                        }
+
+                        break;
+
+                    case DialogResult.Cancel:
+
+                        // Exits the application
+                        Application.Exit();
+
+                        break;
+                }
+            }
+
+            // Gets all the mails from the mailbox
+            var allMails = MailManager.GetAllMails();
+
+            // Adds each file per mail
+            foreach (var mail in allMails)
+            {
+                // If no root folder, abort
+                if (!Directory.Exists(Globals.ROOT_DIRECTORY))
+                    return;
+
+                // Splits the mail subject to get info
+                var mailInfos = mail.Subject.Split(new[] { "::" }, StringSplitOptions.None);
+
+                // Gets the mail full path
+                var fullPath = Globals.ROOT_DIRECTORY + mailInfos[1].Substring(1);
+
+                // Creates the file from base64
+                new FileInfo(fullPath).Directory.Create();
+                File.WriteAllBytes(fullPath, Convert.FromBase64String(mail.TextBody));
+
+                // Sets the file creation and edit time
+                File.SetCreationTime(fullPath, DateTime.Parse(mailInfos[2]));
+                File.SetLastWriteTime(fullPath, DateTime.Parse(mailInfos[3]));
+            }
+        }
 
         /// <summary>
         /// Updates the local files list, adds the new files and removes the deleted ones
@@ -190,11 +252,6 @@ namespace MailStorage
                     // Ignored
                 }
             }
-        }
-
-        public static void ConvertFileFrom64()
-        {
-            
         }
 
         /// <summary>

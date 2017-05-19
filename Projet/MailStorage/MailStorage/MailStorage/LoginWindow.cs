@@ -142,19 +142,6 @@ namespace MailStorage
             // Checks the valid boolean
             if (blnFormIsvalid)
             {
-                // Checks if the drive is NTFS (required for the applciation to run)
-                if (new DriveInfo(pathTextBox.Text).DriveFormat != "NTFS")
-                {
-                    // Displays a messagebox with the error
-                    MessageBox.Show("Le lecteur que vous utilisez doit être formaté en NTFS.\n\n" +
-                                    "Reformatez le lecteur ou changez de dossier racine pour continuer.\n\n",
-                        "Erreur de dossier racine",
-                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
-
-                    // Returns
-                    return;
-                }
-
                 // Connects to the IMAP server and authenticates, also checks if the drive is NTFP
                 if (MailManager.ConnectIMAP(serverTextBox.Text, portTextBox.Text, mailTextBox.Text, passwordTextBox.Text))
                 {
@@ -184,6 +171,9 @@ namespace MailStorage
 
                     // Shows the window
                     Globals.mainWindow.Show();
+
+                    // Initializes the main window
+                    Globals.mainWindow.InitializeWindow();
                 }
             }
         }

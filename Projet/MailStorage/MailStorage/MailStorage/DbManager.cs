@@ -75,6 +75,23 @@ namespace MailStorage
             // Opens the connection to the database
             dbConnection.Open();
 
+            // Gets the old path in the database
+            var sqlCommand = new SQLiteCommand("SELECT * FROM appData LIMIT 1", dbConnection);
+            var sqlReader = sqlCommand.ExecuteReader();
+
+            // If ther're no rows, sets up the inital sync
+            if (!sqlReader.HasRows)
+            {
+                Globals.NEED_INITIAL_SYNC = true;
+            }
+
+            // If ther're rows, checks if the path is the same
+            while (sqlReader.Read())
+            {
+                if (sqlReader["rootpath"].ToString() != dirPath)
+                    Globals.NEED_INITIAL_SYNC = true;
+            }
+
             // Clears the data table
             executeSQLQuery("DELETE FROM appData");
 

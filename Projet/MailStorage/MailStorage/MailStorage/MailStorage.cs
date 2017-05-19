@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Runtime;
 using System.Text;
@@ -33,7 +34,10 @@ namespace MailStorage
         public static extern bool ReleaseCapture();
 
         // Class variables declaration
+        private Task initialSync;
         private Task globalRefresh;
+        private bool blnAppCrash = false;
+        private FileSystemWatcher rootFolderWatcher = new FileSystemWatcher();
 
         /// <summary>
         /// Class constructor
@@ -48,6 +52,41 @@ namespace MailStorage
 
             // Updates the storage size
             UpdateMailboxSpace();
+
+            // Starts the root folder monitoring
+            rootFolderWatcher.Path = Globals.ROOT_DIRECTORY;
+            rootFolderWatcher.IncludeSubdirectories = true;
+            rootFolderWatcher.NotifyFilter = NotifyFilters.LastAccess | NotifyFilters.LastWrite
+                                   | NotifyFilters.FileName | NotifyFilters.DirectoryName;
+
+            // Adds the events
+            rootFolderWatcher.Changed += SynchronizeFiles;
+            rootFolderWatcher.Created += SynchronizeFiles;
+            rootFolderWatcher.Deleted += SynchronizeFiles;
+            rootFolderWatcher.Renamed += SynchronizeFiles;
+
+            // Starts the monitoring
+            rootFolderWatcher.EnableRaisingEvents = true;
+        }
+
+        /// <summary>
+        /// Initializes the window when called
+        /// </summary>
+        public void InitializeWindow()
+        {
+            // Checks for the initial sync
+            if (Globals.NEED_INITIAL_SYNC)
+            {
+                // Starts the task and the synchronisation
+                initialSync = Task.Factory.StartNew(FilesManager.InitialSynchronisation);
+
+                // Sets the variable to false
+                Globals.NEED_INITIAL_SYNC = false;
+            }
+
+            // Sarts the monitoring
+            if (!rootFolderWatcher.EnableRaisingEvents)
+                rootFolderWatcher.EnableRaisingEvents = true;
         }
 
         /// <summary>
@@ -57,8 +96,25 @@ namespace MailStorage
         /// <param name="e"></param>
         private void BackButtonClick(object sender, EventArgs e)
         {
+            // Checks if tasks are running
+            if (globalRefresh != null && !globalRefresh.IsCompleted || initialSync != null && !initialSync.IsCompleted)
+            {
+                // Displays the warning message
+                MessageBox.Show("Un synchronisation est en cours.\n" +
+                                "Impossible de retourner à l'écran de login pour le moment.\n" +
+                                "Veuillez patienter pendant quelques secondes.",
+                    "Synchronisation en cours",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+
+                return;
+            }
+
             // Hides the main window
             Globals.mainWindow.Hide();
+
+            // Stops the monitoring
+            if (rootFolderWatcher.EnableRaisingEvents)
+                rootFolderWatcher.EnableRaisingEvents = false;
 
             // Disconnects from the mail server
             MailManager.DisconnectIMAP();
@@ -68,6 +124,29 @@ namespace MailStorage
 
             // Displays the login window
             Globals.loginWindow.Show();
+        }
+
+        /// <summary>
+        /// Called when the synchronisation button is clicked
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void SyncButton(object sender, EventArgs e)
+        {
+            // Checks if already in this state
+            if (statusLabel.Text != "Synchronisation")
+            {
+                // Snyc mode
+                statusLabel.Text = "Synchronisation";
+                statusLabel.BackColor = Color.NavajoWhite;
+                statusLabel.ForeColor = Color.Peru;
+                statusBackPictureBox.BackColor = Color.NavajoWhite;
+                statusPictureBox.BackColor = Color.NavajoWhite;
+                statusPictureBox.Image = Image.FromFile("sync.gif");
+            }
+
+            // Manual synchronisation
+            SynchronizeFiles(null, null);
         }
 
         /// <summary>
@@ -92,8 +171,24 @@ namespace MailStorage
         /// <param name="e"></param>
         private void ExitApplication(object sender, MouseEventArgs e)
         {
-            // Exits the application
-            Application.Exit();
+            // Checks if tasks are running
+            if (globalRefresh != null && !globalRefresh.IsCompleted || initialSync != null && !initialSync.IsCompleted)
+            {
+                // Displays the warning message
+                if (MessageBox.Show("Un synchronisation est en cours.\n" +
+                                    "Fermer l'application maintenant pourrait endommager vos fichiers.\n" +
+                                    "Etes vous sur de vouloir quitter ?", "Synchronisation en cours",
+                        MessageBoxButtons.OKCancel, MessageBoxIcon.Warning) == DialogResult.OK)
+                {
+                    // Exits the application
+                    Application.Exit();
+                }
+            }
+            else
+            {
+                // Exits the application
+                Application.Exit();
+            }
         }
 
         /// <summary>
@@ -141,14 +236,14 @@ namespace MailStorage
         }
 
         /// <summary>
-        /// Refreshes the local and remote files each x seconds
+        /// Synchronizes the files between the local folder and the user mailbox
         /// </summary>
-        /// <param name="sender"></param>
+        /// <param name="source"></param>
         /// <param name="e"></param>
-        private void RefreshFiles(object sender, EventArgs e)
+        private void SynchronizeFiles(object source, FileSystemEventArgs e)
         {
             // returns if the task is already running
-            if (globalRefresh != null && !globalRefresh.IsCompleted) return;
+            if (globalRefresh != null && !globalRefresh.IsCompleted || initialSync != null && !initialSync.IsCompleted) return;
 
             // Updates the storage size
             UpdateMailboxSpace();
@@ -163,8 +258,84 @@ namespace MailStorage
                 // Updates the files
                 FilesManager.AddLocalFilesToMailBox();
                 FilesManager.DeleteRemotesFilesFromLocal();
-                
+
             });
+        }
+
+        /// <summary>
+        /// Refreshes the main windoe elements (status, backgrounds, etc...)
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void RefreshWindowElements(object sender, EventArgs e)
+        {
+            // Checks if the root folder still exists
+            if (!Directory.Exists(Globals.ROOT_DIRECTORY) && !blnAppCrash)
+            {
+                // Sets the boolean to true
+                blnAppCrash = true;
+
+                // Displays the error message
+                MessageBox.Show("Oups ...\n\n" +
+                                "Il semblerait que le dossier racine ne soit plus trouvable.\n" +
+                                "Veuillez spécifier un nouveau dossier valide.",
+                    "Dossier racine inexistant",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                // Exits the application
+                Application.Exit();
+            }
+
+            // Checks if the application is still connected to the IMAP server
+            if (!MailManager.imapCli.IsConnected || !MailManager.imapCli.IsAuthenticated)
+            {
+                // Reconnects the program to the IMAP server
+                if (!MailManager.ConnectIMAP(Globals.IMAP_SERVER_NAME, Globals.IMAP_SERVER_PORT, Globals.USER_MAIL_ADDRESS, Globals.USER_MAIL_PASSWORD))
+                {
+                    // Sets the boolean to true
+                    blnAppCrash = true;
+
+                    // Displays the error message
+                    MessageBox.Show("Oups ...\n\n" +
+                                    "Il semblerait que vous ayez été déconnecté du serveur mail.\n" +
+                                    "Veuillez vous reconnecter depuis la page de connexion.",
+                        "Connexion perdue",
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                    // Exits the application
+                    Application.Exit();
+                }
+            }
+
+            // Checks if it's a synchronisation
+            if (globalRefresh != null && !globalRefresh.IsCompleted || initialSync != null && !initialSync.IsCompleted)
+            {
+                // Checks if already in this state
+                if (statusLabel.Text == "Synchronisation") return;
+
+                // Snyc mode
+                statusLabel.Text = "Synchronisation";
+                statusLabel.BackColor = Color.NavajoWhite;
+                statusLabel.ForeColor = Color.Peru;
+
+                statusBackPictureBox.BackColor = Color.NavajoWhite;
+                statusPictureBox.BackColor = Color.NavajoWhite;
+                statusPictureBox.Image = Image.FromFile("sync.gif");
+            }
+            else
+            {
+                // Checks if already in this state
+                if (statusLabel.Text == "Activé") return;
+
+                // Activated mode
+                statusLabel.Text = "Activé";
+                statusLabel.BackColor = Color.SpringGreen;
+                statusLabel.ForeColor = Color.DarkGreen;
+
+                statusBackPictureBox.BackColor = Color.SpringGreen;
+                statusPictureBox.BackColor = Color.SpringGreen;
+                statusPictureBox.Image = Image.FromFile("activated.png");
+            }
         }
     }
 }

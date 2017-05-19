@@ -21,7 +21,7 @@ namespace MailStorage
     /// </summary>
     static class MailManager
     {
-        private static readonly ImapClient imapCli = new ImapClient();       // The IMAP client
+        public static readonly ImapClient imapCli = new ImapClient();       // The IMAP client
 
         /// <summary>
         /// Connects the application to the IMAP server with the given data
@@ -178,6 +178,32 @@ namespace MailStorage
 
             // Returns the subjects list
             return subjectList;
+        }
+
+        /// <summary>
+        /// Downloads all the mails from the MailStorage folder in the mailbox
+        /// </summary>
+        /// <returns>List of all the mails</returns>
+        public static List<MimeMessage> GetAllMails()
+        {
+            // Variables declaration
+            var mailsList = new List<MimeMessage>();
+
+            // Opens the MailStorage folder
+            var mailStorageFolder = imapCli.GetFolder("MailStorage");
+            mailStorageFolder.Open(FolderAccess.ReadOnly);
+
+            // Downloads all the mails
+            for (var i = 0; i < mailStorageFolder.Count; i++)
+            {
+                mailsList.Add(mailStorageFolder.GetMessage(i));
+            }
+
+            // Closes the mailbox folder
+            mailStorageFolder.Close();
+
+            // Returns the mails list
+            return mailsList;
         }
 
         /// <summary>
