@@ -45,6 +45,7 @@
             this.statusPictureBox = new System.Windows.Forms.PictureBox();
             this.statusBackPictureBox = new System.Windows.Forms.PictureBox();
             this.windowElementsRefresh = new System.Windows.Forms.Timer(this.components);
+            this.currentFileLabel = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.barPictureBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.mailPictureBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.statusPictureBox)).BeginInit();
@@ -236,6 +237,22 @@
             this.windowElementsRefresh.Interval = 2000;
             this.windowElementsRefresh.Tick += new System.EventHandler(this.RefreshWindowElements);
             // 
+            // currentFileLabel
+            // 
+            this.currentFileLabel.AutoEllipsis = true;
+            this.currentFileLabel.AutoSize = true;
+            this.currentFileLabel.BackColor = System.Drawing.Color.SpringGreen;
+            this.currentFileLabel.Font = new System.Drawing.Font("Berlin Sans FB", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.currentFileLabel.ForeColor = System.Drawing.Color.Peru;
+            this.currentFileLabel.Location = new System.Drawing.Point(5, 550);
+            this.currentFileLabel.MaximumSize = new System.Drawing.Size(550, 60);
+            this.currentFileLabel.MinimumSize = new System.Drawing.Size(490, 25);
+            this.currentFileLabel.Name = "currentFileLabel";
+            this.currentFileLabel.Size = new System.Drawing.Size(490, 26);
+            this.currentFileLabel.TabIndex = 14;
+            this.currentFileLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.currentFileLabel.Visible = false;
+            // 
             // MailStorage
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 25F);
@@ -243,6 +260,7 @@
             this.BackColor = System.Drawing.Color.AliceBlue;
             this.ClientSize = new System.Drawing.Size(700, 750);
             this.Controls.Add(this.statusPictureBox);
+            this.Controls.Add(this.currentFileLabel);
             this.Controls.Add(this.statusBackPictureBox);
             this.Controls.Add(this.spaceValueLabel);
             this.Controls.Add(this.spaceBackLabel);
@@ -286,6 +304,7 @@
         private System.Windows.Forms.PictureBox statusPictureBox;
         private System.Windows.Forms.PictureBox statusBackPictureBox;
         private System.Windows.Forms.Timer windowElementsRefresh;
+        private System.Windows.Forms.Label currentFileLabel;
     }
 }
 

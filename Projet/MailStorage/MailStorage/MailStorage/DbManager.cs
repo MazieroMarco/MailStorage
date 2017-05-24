@@ -44,7 +44,7 @@ namespace MailStorage
                     "(servername VARCHAR(100)," +
                     "serverport VARCHAR(4)," +
                     "usermail VARCHAR(250)," +
-                    "userpassword VARCHAR(250)," +
+                    "userpassword TEXT," +
                     "rootpath VARCHAR(250))";
 
                 // Creates the command
@@ -85,18 +85,18 @@ namespace MailStorage
                 Globals.NEED_INITIAL_SYNC = true;
             }
 
-            // If ther're rows, checks if the path is the same
+            // If ther're rows, checks if the path is the same or the mail adress
             while (sqlReader.Read())
             {
-                if (sqlReader["rootpath"].ToString() != dirPath)
+                if (sqlReader["rootpath"].ToString() != dirPath || sqlReader["usermail"].ToString() != userMail)
                     Globals.NEED_INITIAL_SYNC = true;
             }
 
             // Clears the data table
-            executeSQLQuery("DELETE FROM appData");
+            ExecuteSQLQuery("DELETE FROM appData");
 
             // Inserts the values to the table
-            executeSQLQuery("INSERT INTO appData VALUES ('" + serverName + "', '" + serverPort + "', '" + userMail + "', '" + userPassword + "', '" + dirPath + "')");
+            ExecuteSQLQuery("INSERT INTO appData VALUES ('" + serverName + "', '" + serverPort + "', '" + userMail + "', '" + userPassword + "', '" + dirPath + "')");
 
             // Closes the connection
             dbConnection.Close();
@@ -136,7 +136,7 @@ namespace MailStorage
         /// Executes a SQL query on the database
         /// </summary>
         /// <param name="strQuery"></param>
-        private void executeSQLQuery(string strQuery)
+        private void ExecuteSQLQuery(string strQuery)
         {
             // Prepares the query
             var sqlCommand = new SQLiteCommand(strQuery, dbConnection);

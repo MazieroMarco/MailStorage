@@ -15,6 +15,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using CsharpAes;
 
 namespace MailStorage
 {
@@ -32,6 +33,9 @@ namespace MailStorage
         [System.Runtime.InteropServices.DllImportAttribute("user32.dll")]
         public static extern bool ReleaseCapture();
 
+        // Class variables
+        private Task connectImap;
+
         /// <summary>
         /// Class constructor
         /// </summary>
@@ -42,8 +46,6 @@ namespace MailStorage
 
             // Adds this window to the globals
             Globals.loginWindow = this;
-
-            
         }
 
         /// <summary>
@@ -62,7 +64,7 @@ namespace MailStorage
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void ValidateConnection(object sender, EventArgs e)
+        private async void ValidateConnection(object sender, EventArgs e)
         {
             // Variables declaration
             var blnFormIsvalid = true;      // If true, the connection form is valid
@@ -142,12 +144,34 @@ namespace MailStorage
             // Checks the valid boolean
             if (blnFormIsvalid)
             {
-                // Connects to the IMAP server and authenticates, also checks if the drive is NTFP
-                if (MailManager.ConnectIMAP(serverTextBox.Text, portTextBox.Text, mailTextBox.Text, passwordTextBox.Text))
+                // Displays the loading elements on the screen
+                loadingBack.Visible = true;
+                loadingImage.Visible = true;
+                loadingLabel.Visible = true;
+
+                // Defines the connection result variable
+                bool connectionResult = false;
+
+                // Starts the connect task
+                connectImap = Task.Factory.StartNew(() =>
                 {
+                    // Connects to the imap server and gets the bool result
+                    connectionResult = MailManager.ConnectIMAP(serverTextBox.Text, portTextBox.Text, mailTextBox.Text, passwordTextBox.Text);
+                });
+
+                // Waits for the task to finish
+                await connectImap;
+
+                // If the connection result is true, goes on, if not, goes back to the login window
+                if (connectionResult)
+                {
+                    // Crypts the user password
+                    var aesPwdKey = new PasswordAes(Globals.PASSWORD_KEY);
+                    var cryptedPwd = aesPwdKey.Encrypt(passwordTextBox.Text); 
+
                     // Connection successful, saves the user data into the database
                     var db = new DbManager();
-                    db.UpdateUserData(serverTextBox.Text, portTextBox.Text, mailTextBox.Text, passwordTextBox.Text, pathTextBox.Text);
+                    db.UpdateUserData(serverTextBox.Text, portTextBox.Text, mailTextBox.Text, cryptedPwd, pathTextBox.Text);
 
                     // Creates the mailstorage folder in the mailbox
                     MailManager.CreateStorageFolder();
@@ -159,7 +183,7 @@ namespace MailStorage
                     Globals.IMAP_SERVER_NAME = serverTextBox.Text;
                     Globals.IMAP_SERVER_PORT = portTextBox.Text;
                     Globals.USER_MAIL_ADDRESS = mailTextBox.Text;
-                    Globals.USER_MAIL_PASSWORD = passwordTextBox.Text;
+                    Globals.USER_MAIL_PASSWORD = cryptedPwd;
                     Globals.ROOT_DIRECTORY = pathTextBox.Text;
 
                     // Creates the window if it doesn't exist
@@ -167,7 +191,7 @@ namespace MailStorage
                         Globals.mainWindow = new MailStorage();
                     
                     // Places the login window
-                    Globals.mainWindow.Location = Globals.mainWindow.Location;
+                    Globals.mainWindow.Location = Globals.loginWindow.Location;
 
                     // Shows the window
                     Globals.mainWindow.Show();
@@ -175,6 +199,16 @@ namespace MailStorage
                     // Initializes the main window
                     Globals.mainWindow.InitializeWindow();
                 }
+                else
+                {
+                    // Disconnects the client if connected
+                    MailManager.DisconnectIMAP();
+                }
+
+                // Hides the loading elements
+                loadingBack.Visible = false;
+                loadingImage.Visible = false;
+                loadingLabel.Visible = false;
             }
         }
 
@@ -191,11 +225,15 @@ namespace MailStorage
 
             if (liData.Count > 0)
             {
+                // Decrypts the password
+                var aesPwdKey = new PasswordAes(Globals.PASSWORD_KEY);
+                var decryptedPwd = aesPwdKey.Decrypt(liData[3]);
+
                 // Fills the fields
                 serverTextBox.Text = liData[0];
                 portTextBox.Text = liData[1];
                 mailTextBox.Text = liData[2];
-                passwordTextBox.Text = liData[3];
+                passwordTextBox.Text = decryptedPwd;
                 pathTextBox.Text = liData[4];
 
                 // Calls the validate function

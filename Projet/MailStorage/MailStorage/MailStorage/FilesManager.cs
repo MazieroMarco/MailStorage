@@ -27,11 +27,11 @@ namespace MailStorage
         public static void InitialSynchronisation()
         {
             // Checks if there're files in the root folder
-            if (Directory.GetFiles(Globals.ROOT_DIRECTORY, "*", SearchOption.AllDirectories).Length > 0)
+            if (Directory.GetFiles(Globals.ROOT_DIRECTORY, "*", SearchOption.AllDirectories).Length > 0 || Directory.GetDirectories(Globals.ROOT_DIRECTORY, "*").Length > 0)
             {
                 // Displays the question message about the files
-                var userChoice = MessageBox.Show("Le dossier racine que vous avez choisi possède déjà des fichiers.\n" +
-                                "Voulez-vous que ces fichiers soient synchronisés avec la boite mail ou supprimés ?\n\n" +
+                var userChoice = MessageBox.Show("Vous avez changé d'adresse mail ou de dossier racine.\n" +
+                                "Voulez-vous que ces fichiers du dossier soient synchronisés avec la boite mail ou supprimés ?\n\n" +
                                 "(Cliquez sur OUI pour synchroniser, sur NON pour les supprimer et sur ANNULER pour quitter l'application)",
                     "Fichiers dans le dossier racine",
                     MessageBoxButtons.YesNoCancel, MessageBoxIcon.Warning);
@@ -50,6 +50,13 @@ namespace MailStorage
                             // Tries to delete the file
                             try
                             {
+                                // Gets the file information
+                                var infos = new FileInfo(file);
+
+                                // Sets the file status label
+                                Globals.mainWindow.UpdateCurrentFile("Suppression du fichier\n" + infos.Name);
+
+                                // Deletes the file
                                 File.Delete(file);
                             }
                             catch (Exception e)
@@ -63,6 +70,31 @@ namespace MailStorage
                             }
                         }
 
+                        // Deletes all the directories in the root folder
+                        foreach (var folder in Directory.GetDirectories(Globals.ROOT_DIRECTORY, "*"))
+                        {
+                            // Tries to delete the file
+                            try
+                            {
+                                // Gets the file information
+                                var infos = new DirectoryInfo(folder);
+
+                                // Sets the file status label
+                                Globals.mainWindow.UpdateCurrentFile("Suppression du dossier\n" + infos.Name);
+
+                                // Deletes the folder
+                                Directory.Delete(folder, true);
+                            }
+                            catch (Exception e)
+                            {
+                                // Gets the file information
+                                var infos = new DirectoryInfo(folder);
+
+                                // Displays the error message
+                                MessageBox.Show("Impossible de supprimer le dossier " + infos.Name + "\n\n" +
+                                                "Erreur : " + e.Message);
+                            }
+                        }
                         break;
 
                     case DialogResult.Cancel:
@@ -105,10 +137,6 @@ namespace MailStorage
         /// </summary>
         public static void UpdateLocalFiles()
         {
-            // Adds the new files to the list
-            foreach (var file in Directory.GetFiles(Globals.ROOT_DIRECTORY, "*", SearchOption.AllDirectories))
-                AddLocalFileToList(file);
-
             // Gets the files paths from the list
             var pathList = Globals.LOCAL_FILES.Select(a=>a.filePath).ToList();
 
@@ -132,6 +160,10 @@ namespace MailStorage
                 if (!blnExists)
                     Globals.LOCAL_FILES.Remove(Globals.LOCAL_FILES.FirstOrDefault(a => a.filePath == listFilePath));
             }
+
+            // Adds the new files to the list
+            foreach (var file in Directory.GetFiles(Globals.ROOT_DIRECTORY, "*", SearchOption.AllDirectories))
+                AddLocalFileToList(file);
         }
 
         /// <summary>
@@ -197,7 +229,7 @@ namespace MailStorage
                 // Goes through the remote files list
                 foreach (var remoteFile in Globals.MAIL_FILES)
                 {
-                    if (remoteFile.filePath == localFile.filePath)
+                    if (remoteFile.filePath == localFile.filePath && remoteFile.fileModificationDate.ToString() == localFile.fileModificationDate.ToString())
                     {
                         // Sets the add booelan to true
                         blnFileExists = true;
@@ -206,7 +238,13 @@ namespace MailStorage
 
                 // If the file is not in the mailbox, adds id
                 if (!blnFileExists)
+                {
+                    // Sets the file status label
+                    Globals.mainWindow.UpdateCurrentFile("Envoi du fichier\n" + localFile.fileName);
+
+                    // Sends the file to the storage
                     MailManager.SendMailToStorage(localFile.fileName + "::" + localFile.filePath + "::" + localFile.fileCreationDate + "::" + localFile.fileModificationDate, ConvertFileTo64(localFile));
+                }
             }
         }
 
@@ -224,13 +262,19 @@ namespace MailStorage
                 foreach (var localFile in Globals.LOCAL_FILES)
                 {
                     // If the files exists in the other list
-                    if (localFile.filePath == remoteFile.filePath)
+                    if (localFile.filePath == remoteFile.filePath && remoteFile.fileModificationDate.ToString() == localFile.fileModificationDate.ToString())
                         blnFileExists = true;
                 }
 
                 // Deletes the file if it's not in local
                 if (!blnFileExists)
+                {
+                    // Sets the file status label
+                    Globals.mainWindow.UpdateCurrentFile("Suppression du fichier\n" + remoteFile.fileName);
+
+                    // Deletes the file
                     MailManager.DeleteMailInStorage(remoteFile);
+                }
             }
         }
 

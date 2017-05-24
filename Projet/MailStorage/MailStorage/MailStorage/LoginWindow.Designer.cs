@@ -50,8 +50,12 @@
             this.passwordErrorLabel = new System.Windows.Forms.Label();
             this.serverErrorLabel = new System.Windows.Forms.Label();
             this.portErrorLabel = new System.Windows.Forms.Label();
+            this.loadingImage = new System.Windows.Forms.PictureBox();
+            this.loadingLabel = new System.Windows.Forms.Label();
+            this.loadingBack = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.barPictureBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.mailPictureBox)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.loadingImage)).BeginInit();
             this.SuspendLayout();
             // 
             // barPictureBox
@@ -122,6 +126,7 @@
             this.serverTextBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.125F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.serverTextBox.ForeColor = System.Drawing.Color.SteelBlue;
             this.serverTextBox.Location = new System.Drawing.Point(50, 233);
+            this.serverTextBox.MaxLength = 230;
             this.serverTextBox.Name = "serverTextBox";
             this.serverTextBox.Size = new System.Drawing.Size(290, 38);
             this.serverTextBox.TabIndex = 5;
@@ -133,6 +138,7 @@
             this.mailTextBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.125F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.mailTextBox.ForeColor = System.Drawing.Color.SteelBlue;
             this.mailTextBox.Location = new System.Drawing.Point(50, 358);
+            this.mailTextBox.MaxLength = 240;
             this.mailTextBox.Name = "mailTextBox";
             this.mailTextBox.Size = new System.Drawing.Size(600, 38);
             this.mailTextBox.TabIndex = 7;
@@ -157,6 +163,7 @@
             this.portTextBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.125F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.portTextBox.ForeColor = System.Drawing.Color.SteelBlue;
             this.portTextBox.Location = new System.Drawing.Point(360, 233);
+            this.portTextBox.MaxLength = 230;
             this.portTextBox.Name = "portTextBox";
             this.portTextBox.Size = new System.Drawing.Size(290, 38);
             this.portTextBox.TabIndex = 9;
@@ -181,6 +188,7 @@
             this.passwordTextBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.125F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.passwordTextBox.ForeColor = System.Drawing.Color.SteelBlue;
             this.passwordTextBox.Location = new System.Drawing.Point(50, 483);
+            this.passwordTextBox.MaxLength = 240;
             this.passwordTextBox.Name = "passwordTextBox";
             this.passwordTextBox.Size = new System.Drawing.Size(600, 38);
             this.passwordTextBox.TabIndex = 11;
@@ -203,6 +211,7 @@
             // 
             this.pathTextBox.BackColor = System.Drawing.Color.GhostWhite;
             this.pathTextBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.pathTextBox.Enabled = false;
             this.pathTextBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.125F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.pathTextBox.ForeColor = System.Drawing.Color.SteelBlue;
             this.pathTextBox.Location = new System.Drawing.Point(50, 608);
@@ -227,13 +236,13 @@
             // 
             this.pathButton.BackColor = System.Drawing.Color.AliceBlue;
             this.pathButton.FlatAppearance.BorderColor = System.Drawing.Color.SteelBlue;
-            this.pathButton.FlatAppearance.BorderSize = 3;
+            this.pathButton.FlatAppearance.BorderSize = 2;
             this.pathButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.pathButton.Font = new System.Drawing.Font("Berlin Sans FB", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.pathButton.Font = new System.Drawing.Font("Berlin Sans FB", 10.125F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.pathButton.ForeColor = System.Drawing.Color.SteelBlue;
-            this.pathButton.Location = new System.Drawing.Point(457, 608);
+            this.pathButton.Location = new System.Drawing.Point(457, 602);
             this.pathButton.Name = "pathButton";
-            this.pathButton.Size = new System.Drawing.Size(193, 38);
+            this.pathButton.Size = new System.Drawing.Size(193, 51);
             this.pathButton.TabIndex = 14;
             this.pathButton.Text = "Parcourir";
             this.pathButton.UseVisualStyleBackColor = false;
@@ -314,12 +323,49 @@
             this.portErrorLabel.TabIndex = 19;
             this.portErrorLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
+            // loadingImage
+            // 
+            this.loadingImage.Image = ((System.Drawing.Image)(resources.GetObject("loadingImage.Image")));
+            this.loadingImage.Location = new System.Drawing.Point(150, 150);
+            this.loadingImage.Name = "loadingImage";
+            this.loadingImage.Size = new System.Drawing.Size(400, 400);
+            this.loadingImage.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.loadingImage.TabIndex = 21;
+            this.loadingImage.TabStop = false;
+            this.loadingImage.Visible = false;
+            // 
+            // loadingLabel
+            // 
+            this.loadingLabel.AutoSize = true;
+            this.loadingLabel.Font = new System.Drawing.Font("Berlin Sans FB", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.loadingLabel.ForeColor = System.Drawing.Color.SteelBlue;
+            this.loadingLabel.Location = new System.Drawing.Point(0, 625);
+            this.loadingLabel.MinimumSize = new System.Drawing.Size(700, 0);
+            this.loadingLabel.Name = "loadingLabel";
+            this.loadingLabel.Size = new System.Drawing.Size(700, 35);
+            this.loadingLabel.TabIndex = 22;
+            this.loadingLabel.Text = "Connexion à la boite mail ...";
+            this.loadingLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.loadingLabel.Visible = false;
+            // 
+            // loadingBack
+            // 
+            this.loadingBack.AutoSize = true;
+            this.loadingBack.Location = new System.Drawing.Point(0, 50);
+            this.loadingBack.MinimumSize = new System.Drawing.Size(700, 700);
+            this.loadingBack.Name = "loadingBack";
+            this.loadingBack.Size = new System.Drawing.Size(700, 700);
+            this.loadingBack.TabIndex = 23;
+            // 
             // LoginWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 25F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.AliceBlue;
             this.ClientSize = new System.Drawing.Size(700, 750);
+            this.Controls.Add(this.loadingLabel);
+            this.Controls.Add(this.loadingImage);
+            this.Controls.Add(this.loadingBack);
             this.Controls.Add(this.portErrorLabel);
             this.Controls.Add(this.serverErrorLabel);
             this.Controls.Add(this.passwordErrorLabel);
@@ -349,6 +395,7 @@
             this.Shown += new System.EventHandler(this.OnShown);
             ((System.ComponentModel.ISupportInitialize)(this.barPictureBox)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.mailPictureBox)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.loadingImage)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -377,5 +424,8 @@
         private System.Windows.Forms.Label passwordErrorLabel;
         private System.Windows.Forms.Label serverErrorLabel;
         private System.Windows.Forms.Label portErrorLabel;
+        private System.Windows.Forms.PictureBox loadingImage;
+        private System.Windows.Forms.Label loadingLabel;
+        private System.Windows.Forms.Label loadingBack;
     }
 }

@@ -22,3 +22,6 @@ I:\Cours - ETML\TPI\Projet\MailStorage\MailStorage\MailStorage\obj\Debug\MailSto
 I:\Cours - ETML\TPI\Projet\MailStorage\MailStorage\MailStorage\obj\Debug\MailStorage.csproj.GenerateResource.Cache
 I:\Cours - ETML\TPI\Projet\MailStorage\MailStorage\MailStorage\obj\Debug\MailStorage.exe
 I:\Cours - ETML\TPI\Projet\MailStorage\MailStorage\MailStorage\obj\Debug\MailStorage.pdb
+I:\Cours - ETML\TPI\Projet\MailStorage\MailStorage\MailStorage\bin\Debug\csharp-aes.dll
+I:\Cours - ETML\TPI\Projet\MailStorage\MailStorage\MailStorage\bin\Debug\csharp-aes.pdb
+I:\Cours - ETML\TPI\Projet\MailStorage\MailStorage\MailStorage\bin\Debug\csharp-aes.xml

@@ -21,7 +21,7 @@ namespace MailStorage
     /// </summary>
     static class MailManager
     {
-        public static readonly ImapClient imapCli = new ImapClient();       // The IMAP client
+        public static readonly ImapClient imapCli = new ImapClient(new ProtocolLogger("imap.log"));       // The IMAP client
 
         /// <summary>
         /// Connects the application to the IMAP server with the given data
@@ -167,7 +167,20 @@ namespace MailStorage
 
             // Opens the MailStorage folder
             var mailStorageFolder = imapCli.GetFolder("MailStorage");
-            mailStorageFolder.Open(FolderAccess.ReadOnly);
+
+            // Opens the mailstorage folder
+            for (;;)
+            {
+                try
+                {
+                    mailStorageFolder.Open(FolderAccess.ReadOnly);
+                    break;
+                }
+                catch
+                {
+                    // Ignored
+                }
+            }
 
             // Goes through all the mails informations
             foreach (var mailInfo in mailStorageFolder.Fetch(0, -1, MessageSummaryItems.Full | MessageSummaryItems.UniqueId))
@@ -191,12 +204,32 @@ namespace MailStorage
 
             // Opens the MailStorage folder
             var mailStorageFolder = imapCli.GetFolder("MailStorage");
-            mailStorageFolder.Open(FolderAccess.ReadOnly);
+
+            // Opens the mailstorage folder
+            for (;;)
+            {
+                try
+                {
+                    mailStorageFolder.Open(FolderAccess.ReadOnly);
+                    break;
+                }
+                catch
+                {
+                    // Ignored
+                }
+            }
 
             // Downloads all the mails
             for (var i = 0; i < mailStorageFolder.Count; i++)
             {
-                mailsList.Add(mailStorageFolder.GetMessage(i));
+                // Gets the message
+                var newMessage = mailStorageFolder.GetMessage(i);
+
+                // Adds the message to the list
+                mailsList.Add(newMessage);
+
+                // Sets the file status label
+                Globals.mainWindow.UpdateCurrentFile("Téléchargement du fichier\n" + newMessage.Subject.Split(new[] { "::" }, StringSplitOptions.None)[1]);
             }
 
             // Closes the mailbox folder
@@ -210,7 +243,20 @@ namespace MailStorage
         /// Returns the mailbox informations
         /// </summary>
         /// <returns>The mailbox quota</returns>
-        public static FolderQuota GetMailboxQuota() => imapCli.GetFolder("MailStorage").GetQuota();
+        public static FolderQuota GetMailboxQuota()
+        {
+            // Tries to get the quota
+            try
+            {
+                // Gets the mailbox quota
+                return imapCli.GetFolder("MailStorage").GetQuota();
+            }
+            catch
+            {
+                // Returns null
+                return null;
+            }
+        }
     }
 }
 

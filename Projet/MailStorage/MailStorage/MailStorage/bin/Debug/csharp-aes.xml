@@ -1,0 +1,724 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>csharp-aes</name>
+    </assembly>
+    <members>
+        <member name="T:CsharpAes.AdvancedAes">
+            <summary>
+                Represents a wrapper around <see cref="T:CsharpAes.SimpleAes" /> that has a single string input and single string output.
+            </summary>
+        </member>
+        <member name="F:CsharpAes.AdvancedAes.CurrentAlgVersion">
+            <summary>
+                Current version of algorithm and header
+            </summary>
+        </member>
+        <member name="F:CsharpAes.AdvancedAes.EncryptionKeyLength">
+            <summary>
+                Length of <see cref="P:CsharpAes.AdvancedAes.EncryptionKey" />. 256 bits = 32 bytes
+            </summary>
+        </member>
+        <member name="F:CsharpAes.AdvancedAes.EncryptionSaltLength">
+            <summary>
+                It can be any value considered safe. Length of <see cref="P:CsharpAes.AdvancedAes.EncryptionSalt" />
+            </summary>
+        </member>
+        <member name="F:CsharpAes.AdvancedAes.HMACSaltLength">
+            <summary>
+                Length of <see cref="P:CsharpAes.AdvancedAes.HMACSalt" />
+            </summary>
+        </member>
+        <member name="F:CsharpAes.AdvancedAes.HMACKeyLength">
+            <summary>
+                Length of <c>HMAC</c> key. 64 is suggested, so keep it that way.
+            </summary>
+        </member>
+        <member name="F:CsharpAes.AdvancedAes.IVLength">
+            <summary>
+                Length of IV
+            </summary>
+        </member>
+        <member name="F:CsharpAes.AdvancedAes.Separator">
+            <summary>
+                Separates blocks of output/input strings
+            </summary>
+        </member>
+        <member name="F:CsharpAes.AdvancedAes._aes">
+            <summary>
+                What is <see langword="this" /> class wrapper around
+            </summary>
+        </member>
+        <member name="F:CsharpAes.AdvancedAes.InputEncoding">
+            <summary>
+                Encoding to convert input from/to byte array. (UTF-8)
+            </summary>
+        </member>
+        <member name="F:CsharpAes.AdvancedAes.InternalEncoding">
+            <summary>
+                Encoding used internally to interract with IO
+            </summary>
+        </member>
+        <member name="F:CsharpAes.AdvancedAes._disposed">
+            <summary>
+                If instance has been disposed yet
+            </summary>
+        </member>
+        <member name="M:CsharpAes.AdvancedAes.#ctor(System.Byte[])">
+            <summary>
+                Initializes a new instance of <see cref="T:CsharpAes.AdvancedAes" />
+            </summary>
+            <param name="key">
+                Encryption hmacKey. Must be 256 bits long. Pass null to generate
+                random.
+            </param>
+            <exception cref="T:System.ArgumentOutOfRangeException">Thrown when <paramref name="key" /> is not 256 bits long</exception>
+        </member>
+        <member name="P:CsharpAes.AdvancedAes.EncryptionKey">
+            <summary>
+                Gets the Key used for encryption.
+            </summary>
+            <exception cref="T:System.ArgumentOutOfRangeException">Thrown when <paramref name="value" /> is not 256 bits long</exception>
+        </member>
+        <member name="P:CsharpAes.AdvancedAes.EncryptionSalt">
+            <summary>
+                Gets salt for encryption/decryption key generation
+            </summary>
+        </member>
+        <member name="P:CsharpAes.AdvancedAes.AlgorithmVersion">
+            <summary>
+                Gets or sets the current algorithm version
+            </summary>
+        </member>
+        <member name="P:CsharpAes.AdvancedAes.HMACSalt">
+            <summary>
+                Gets or sets the salt for <c>HMAC</c>
+            </summary>
+        </member>
+        <member name="M:CsharpAes.AdvancedAes.ComputeHMAC(System.IO.Stream,System.Byte[])">
+            <summary>
+                Computes HMACSHA265 of given <paramref name="input" /> using given hmacKey
+            </summary>
+            <param name="input">data to HMAC</param>
+            <param name="hmacKey">key to use for HMAC. Ideal length is 64 bytes</param>
+            <returns></returns>
+        </member>
+        <member name="M:CsharpAes.AdvancedAes.GenerateHMACKey(System.Byte[],System.Byte[])">
+            <summary>
+                Generates a key of length <see cref="F:CsharpAes.AdvancedAes.HMACKeyLength" />
+            </summary>
+            <param name="salt">hmac salt</param>
+            <param name="encryptionKey">encryption key to generate HMAC hmacKey from</param>
+            <returns></returns>
+        </member>
+        <member name="M:CsharpAes.AdvancedAes.ComputeChecksum(System.IO.Stream)">
+            <summary>
+                Compute <c>SHA1</c> checksum of <paramref name="source" /> and return it as a base64 string
+            </summary>
+            <param name="source">what to compute checksum of</param>
+            <returns>base64 of SHA1 checksum of <paramref name="source" /></returns>
+        </member>
+        <member name="M:CsharpAes.AdvancedAes.ValidateEncryptionKey(System.Byte[])">
+            <summary>
+                Checks is <paramref name="key" /> is 256 bits long and if not, <see cref="T:System.ArgumentOutOfRangeException" /> is thrown
+            </summary>
+            <param name="key"></param>
+            <exception cref="T:System.ArgumentOutOfRangeException">Thrown when <paramref name="key" /> is not 256 bits long</exception>
+        </member>
+        <member name="M:CsharpAes.AdvancedAes.Encrypt(System.IO.Stream,System.IO.Stream,System.Boolean)">
+            <summary>
+                Performs an encryption on streams
+            </summary>
+            <param name="source">What to encrypt. Contents will be read from the set position.</param>
+            <param name="destination">Where should the encryption result be. The content will be appended after set position.</param>
+            <param name="closeStreams">whether stream should be closed once the method has finished</param>
+            <exception cref="T:System.IO.IOException">Thrown when an <see cref="T:System.IO.IOException" /> is thrown upon encrypting.</exception>
+            <remarks>
+                Calls <see cref="M:CsharpAes.AdvancedAes.ResetVariables" /> after executing i.e. IV and salts are generated newly.
+            </remarks>
+        </member>
+        <member name="M:CsharpAes.AdvancedAes.Encrypt(System.String)">
+            <summary>
+                Encrypts string to base64 using 256bit <c>Rijndael</c>
+            </summary>
+            <param name="plainText">Text to be encrypted</param>
+            <returns>Cipher as base64 string</returns>
+        </member>
+        <member name="M:CsharpAes.AdvancedAes.Encrypt``1(``0)">
+            <summary>
+                Encrypts an <see langword="object" /> of type T.
+                serialized to XML.
+            </summary>
+            <typeparam name="T">Type of object to serialize</typeparam>
+            <param name="obj">Object to be serialized</param>
+            <returns>Encrypted <paramref name="obj" /></returns>
+            <remarks>
+                Uses <see cref="T:System.Xml.Serialization.XmlSerializer" />
+            </remarks>
+        </member>
+        <member name="M:CsharpAes.AdvancedAes.Decrypt(System.IO.Stream,System.IO.Stream,System.Boolean,System.IO.Stream)">
+            <summary>
+                Decrypts a product of <see cref="M:CsharpAes.AdvancedAes.Encrypt(System.IO.Stream,System.IO.Stream,System.Boolean)" /> stored in a stream into
+                <paramref name="destination" /> without loading ciphertext into memory. Very large files can be encrypted this way
+                with minimum memory usage.
+            </summary>
+            <param name="cipher">Encrypted contents, the contents must be at the end of the stream.</param>
+            <param name="destination">
+                Stream to write to. Must be writable and readable. Contents are written starting with
+                position.
+            </param>
+            <param name="closeStreams">Whether streams should be closed after method finishes.</param>
+            <param name="buffer">
+                Temporary storage. Pass null to use a buffer in memory. Note that it will be emptied in the
+                beginning and full in the end.
+            </param>
+            <exception cref="T:CsharpAes.IncorrectPasswordException">
+                Thrown when given key/password won't decrypt contents or HMAC/plaintext
+                checksum authentication fails.
+            </exception>
+            <exception cref="T:System.FormatException">Thrown <paramref name="cipher" /> is in an invalid format.</exception>
+            <exception cref="T:System.IO.IOException">Thrown when an I/O exception occurrs while decrypting.</exception>
+        </member>
+        <member name="M:CsharpAes.AdvancedAes.Decrypt(System.String)">
+            <summary>
+                Decrypt <paramref name="cipher" /> made by
+                <see cref="M:CsharpAes.AdvancedAes.Encrypt(System.String)" /> with known
+                <see>
+                    <cref>_salt</cref>
+                </see>
+                and password.
+            </summary>
+            <param name="cipher">Cipher to be decrypted.</param>
+            <returns>Decrypted string</returns>
+            <exception cref="T:System.ArgumentNullException">
+                Thrown when
+                <paramref name="cipher" /> is null
+            </exception>
+            <exception cref="T:CsharpAes.IncorrectPasswordException">
+                Thrown when encryption
+                hmacKey doesn't correspond to the correct one
+            </exception>
+            <exception cref="T:System.FormatException">Thrown when cipher is badly formated</exception>
+        </member>
+        <member name="M:CsharpAes.AdvancedAes.Decrypt``1(System.String)">
+            <summary>
+                Decrypts previously encrypted instance.
+            </summary>
+            <typeparam name="T"><c>Type</c> of instance serialized</typeparam>
+            <param name="cipher">ciphertext</param>
+            <returns>Deserialized instance</returns>
+            <exception cref="T:System.ArgumentNullException">Thrown when <paramref name="cipher" /> is null</exception>
+            <exception cref="T:CsharpAes.IncorrectPasswordException">Thrown when encryption hmacKey doesn't correspond to the correct one</exception>
+            <exception cref="T:System.FormatException">Thrown when cipher is badly formated</exception>
+        </member>
+        <member name="M:CsharpAes.AdvancedAes.ResetVariables">
+            <summary>
+                Generates new salts and IV. Called after each encryption automatically)
+            </summary>
+        </member>
+        <member name="M:CsharpAes.AdvancedAes.GenerateDecryptionKey(System.Byte[])">
+            <summary>
+                Generate a decryption hmacKey from <paramref name="salt" /> saved in cipher
+            </summary>
+            <param name="salt">salt from cipher</param>
+            <returns>hmacKey for decryption</returns>
+        </member>
+        <member name="F:CsharpAes.AdvancedAes.ReaderMaxLength">
+            <summary>
+                Max number of characters StreamReaders read upon decrypting before realizing it's invalid garbage.
+            </summary>
+        </member>
+        <member name="M:CsharpAes.AdvancedAes.Dispose">
+            <summary>
+                Releases underlying resources
+            </summary>
+        </member>
+        <member name="M:CsharpAes.AdvancedAes.Dispose(System.Boolean)">
+            <summary>
+                Releases underlying resources and marks instance as disposed, i.e. many methods won't be available
+            </summary>
+            <param name="disposing">if resources should be actually disposed</param>
+        </member>
+        <member name="M:CsharpAes.AdvancedAes.ReadUntilSeparator(System.IO.TextReader,System.Int32)">
+            <summary>
+                Reads from <paramref name="reader" /> until separator or end of the stream
+            </summary>
+            <param name="reader">where to read</param>
+            <param name="abortAfter">
+                max number of character before aborting (e.g. wrong format is passed and you might want to
+                avoid chewing throw GB of badly formated data)
+            </param>
+            <returns>the text excluding separator</returns>
+        </member>
+        <member name="M:CsharpAes.AdvancedAes.CopyUntilSeparator(System.IO.TextReader,System.IO.TextWriter)">
+            <summary>
+                Copy read contents by <paramref name="sourceReader" /> and write them with <see cref="!:destinationWriter" /> until
+                <see cref="F:CsharpAes.AdvancedAes.Separator" /> is hit (exclusive).
+            </summary>
+            <param name="sourceReader">read with/from</param>
+            <param name="destinationWriter">write with/to</param>
+        </member>
+        <member name="M:CsharpAes.AdvancedAes.CheckDisposed">
+            <summary>
+                Checks if instance has already been disposed and throws <see cref="T:System.ObjectDisposedException" /> if yes.
+            </summary>
+            <exception cref="T:System.ObjectDisposedException">Thrown when object has been disposed</exception>
+        </member>
+        <member name="M:CsharpAes.AdvancedAes.GetString(System.Byte[])">
+            <summary>
+            Get base64 representation of <paramref name="bytes"/>
+            </summary>
+            <param name="bytes">what to base64</param>
+            <returns></returns>
+        </member>
+        <member name="M:CsharpAes.AdvancedAes.GetBytes(System.String)">
+            <summary>
+            Converts <paramref name="base64"/> string back to string
+            </summary>
+            <param name="base64">to convert from base64</param>
+            <returns></returns>
+        </member>
+        <member name="M:CsharpAes.AdvancedAes.Finalize">
+            <inheritdoc />
+        </member>
+        <member name="T:CsharpAes.CryptoUtils">
+            <summary>
+                Provides simple methods for encryption
+            </summary>
+        </member>
+        <member name="P:CsharpAes.CryptoUtils.Rfc2898DeriveBytesIterations">
+            <summary>
+                Number of iterations <see cref="T:System.Security.Cryptography.Rfc2898DeriveBytes" /> does while
+                creating a key from password.
+            </summary>
+            <remarks>
+                At least 1 000 iterations are advised, default value is 20 000
+            </remarks>
+        </member>
+        <member name="M:CsharpAes.CryptoUtils.DeriveKey(System.String,System.Byte[],System.Int32)">
+            <summary>
+                Generates an encryption key from <paramref name="password" /> of any
+                length. EncryptionKey is 256 bits long.
+            </summary>
+            <param name="password">string- based password</param>
+            <param name="salt">Salt to add</param>
+            <param name="length">length of the resulting key</param>
+            <returns>
+                EncryptionKey of fixed size 256bit
+            </returns>
+        </member>
+        <member name="M:CsharpAes.CryptoUtils.DeriveKey(System.Byte[],System.Byte[],System.Int32)">
+            <summary>
+            Derive a key from another key and <paramref name="salt"/>
+            </summary>
+            <param name="password">password as bytes to derive from</param>
+            <param name="salt">salt to derive from</param>
+            <param name="length">of which length should output be</param>
+            <returns></returns>
+        </member>
+        <member name="M:CsharpAes.CryptoUtils.GenerateBytes(System.Int32)">
+            <summary>
+                Generate cryptographically strong random bytes, typically salt
+            </summary>
+            <returns>
+                a random salt of specified <paramref name="length" />
+            </returns>
+        </member>
+        <member name="M:CsharpAes.CryptoUtils.SlowCompare(System.Array,System.Array)">
+            <summary>
+                Constant-time array comparison. Returns if arrays are identical
+            </summary>
+            <param name="a"></param>
+            <param name="b"></param>
+            <returns>
+            </returns>
+        </member>
+        <member name="M:CsharpAes.CryptoUtils.SlowCompare(System.String,System.String)">
+            <summary>
+                Constant-time string comparison. Returns if string are identical
+            </summary>
+            <param name="a"></param>
+            <param name="b"></param>
+            <returns>
+            </returns>
+        </member>
+        <member name="T:CsharpAes.Extensions">
+            <summary>
+                Container class for extension methods
+            </summary>
+        </member>
+        <member name="M:CsharpAes.Extensions.AppendBase64(System.Text.StringBuilder,System.Byte[])">
+            <summary>
+                Append bytes encoded as base64 string
+            </summary>
+            <param name="builder">to perform action on</param>
+            <param name="append">what should be appended</param>
+        </member>
+        <member name="M:CsharpAes.Extensions.ArgumentCheck(System.IO.Stream,CsharpAes.StreamCheck,System.String)">
+            <summary>
+                Checks if <paramref name="stream" /> satisfies given conditions,
+                throws appropriate exceptions when not.
+            </summary>
+            <param name="stream">stream to check</param>
+            <param name="checkFor">what to check for</param>
+            <param name="paramName">name of the parameter for exceptions</param>
+            <exception cref="T:System.ArgumentNullException">
+                Thrown when <paramref name="checkFor" /> has
+                <see cref="F:CsharpAes.StreamCheck.Null" /> and
+                <paramref name="stream" /> is null.
+            </exception>
+            <exception cref="T:System.NullReferenceException">
+                Thrown when <paramref name="stream" /> is <see langword="null" /> but
+                <paramref name="checkFor" /> doesn't have Null
+            </exception>
+            <exception cref="T:System.ArgumentException">
+                Thrown when <paramref name="stream" /> doesn't satisfy given
+                conditions
+            </exception>
+        </member>
+        <member name="T:CsharpAes.StreamCheck">
+            <summary>
+                Specifies for what exactly should be a stream tested for.
+            </summary>
+        </member>
+        <member name="F:CsharpAes.StreamCheck.None">
+            <summary>
+                Don't test
+            </summary>
+        </member>
+        <member name="F:CsharpAes.StreamCheck.Null">
+            <summary>
+                Test if is not <see langword="null" />
+            </summary>
+        </member>
+        <member name="F:CsharpAes.StreamCheck.Read">
+            <summary>
+                Test for reading
+            </summary>
+        </member>
+        <member name="F:CsharpAes.StreamCheck.Write">
+            <summary>
+                Test for writing
+            </summary>
+        </member>
+        <member name="T:CsharpAes.PasswordAes">
+            <summary>
+                Represents an AES encryption algorithm that uses string-based passwords to generate actual key
+            </summary>
+        </member>
+        <member name="M:CsharpAes.PasswordAes.#ctor(System.String)">
+            <summary>
+                Initializes a new instance of <see cref="T:CsharpAes.PasswordAes" />
+            </summary>
+            <param name="password">password to generate key from</param>
+            <exception cref="T:System.ArgumentNullException">Thrown when <paramref name="password" /> is null</exception>
+            <exception cref="T:System.ArgumentException">Thrown when <paramref name="password" /> is empty</exception>
+        </member>
+        <member name="P:CsharpAes.PasswordAes.Password">
+            <summary>
+                Gets the password in use
+            </summary>
+            <remarks>
+                <see cref="T:System.Security.SecureString" /> is not used because <see cref="T:System.Security.Cryptography.Rfc2898DeriveBytes" /> doesn't support it
+            </remarks>
+        </member>
+        <member name="M:CsharpAes.PasswordAes.GenerateDecryptionKey(System.Byte[])">
+            <inheritdoc />
+        </member>
+        <member name="M:CsharpAes.PasswordAes.ResetVariables">
+            <inheritdoc />
+        </member>
+        <member name="T:CsharpAes.SimpleAes">
+            <summary>
+                Simple wrapper around <see cref="T:System.Security.Cryptography.RijndaelManaged" /> class. Uses 256-bit
+                keys.
+            </summary>
+        </member>
+        <member name="F:CsharpAes.SimpleAes.IVLength">
+            <summary>
+                Gets the length of
+                <see cref="P:System.Security.Cryptography.SymmetricAlgorithm.IV" /> .
+                Bytes of this length are prepended to every encrypted string and
+                contain iv itself
+            </summary>
+            <remarks>
+                Length of arrray, not bits
+            </remarks>
+        </member>
+        <member name="F:CsharpAes.SimpleAes.DefaultKeySize">
+            <summary>
+                Gets the default key size
+            </summary>
+        </member>
+        <member name="F:CsharpAes.SimpleAes.MinimumCipherLength">
+            <summary>
+                Gets the min length to be deciphered
+            </summary>
+            <remarks>
+                Length of the array, not in bits
+            </remarks>
+        </member>
+        <member name="F:CsharpAes.SimpleAes.BlockSize">
+            <summary>
+                Gets the block size of <c>Rijndael</c> alg in bits
+            </summary>
+        </member>
+        <member name="F:CsharpAes.SimpleAes.ValidKeySizes">
+            <summary>
+                Gets the valid key sizes in bits.
+            </summary>
+        </member>
+        <member name="F:CsharpAes.SimpleAes.Encoding">
+            <summary>
+                Encoding used to get bytes/text from one another. UTF-8.
+            </summary>
+        </member>
+        <member name="M:CsharpAes.SimpleAes.#ctor(System.Byte[],System.Byte[])">
+            <summary>
+                New <see cref="T:CsharpAes.SimpleAes" /> with known <paramref name="key" /> and
+                <see cref="P:CsharpAes.SimpleAes.IV" />
+            </summary>
+            <param name="key"><see cref="P:CsharpAes.SimpleAes.Key" /> used to encrypt/decrypt</param>
+            <param name="iv">
+                <see cref="P:CsharpAes.SimpleAes.IV" /> used to encrypt/decrypt. Use <see langword="null" />
+                to generate random
+            </param>
+            <exception cref="T:System.ArgumentException">Thrown when <paramref name="key" /> or <paramref name="iv" /> are of invalid size</exception>
+            <exception cref="T:System.ArgumentNullException">Thrown when <paramref name="key" /> is null</exception>
+        </member>
+        <member name="M:CsharpAes.SimpleAes.#ctor">
+            <summary>
+                New <see cref="T:CsharpAes.SimpleAes" /> with random
+                <see cref="P:CsharpAes.SimpleAes.Key" /> and
+                <see cref="P:CsharpAes.SimpleAes.IV" />
+            </summary>
+        </member>
+        <member name="P:CsharpAes.SimpleAes.Key">
+            <summary>
+                Gets or sets the key in use.
+            </summary>
+            <exception cref="T:System.ArgumentException">Thrown when <paramref name="value" /> is of invalid size</exception>
+            ///
+            <exception cref="T:System.ArgumentNullException">Trown when <paramref name="value" /> is null</exception>
+        </member>
+        <member name="P:CsharpAes.SimpleAes.IV">
+            <summary>
+                Gets or sets the initialization vector in use
+            </summary>
+            <remarks>
+                The array length must be <see cref="F:CsharpAes.SimpleAes.IVLength" />
+            </remarks>
+        </member>
+        <member name="M:CsharpAes.SimpleAes.Dispose">
+            <summary>
+                <see cref="M:CsharpAes.SimpleAes.Dispose(System.Boolean)" />
+            </summary>
+        </member>
+        <member name="M:CsharpAes.SimpleAes.Dispose(System.Boolean)">
+            <summary>
+                Releases underlying resources
+            </summary>
+            <param name="disposing">whether dispose wrapped managed classes</param>
+        </member>
+        <member name="M:CsharpAes.SimpleAes.Encrypt(System.IO.Stream,System.IO.Stream,System.Boolean)">
+            <summary>
+                Encrypts contents of <paramref name="source" /> and writes them to <paramref name="destination" />.
+            </summary>
+            <param name="source">data to encrypt</param>
+            <param name="destination">where to copy to</param>
+            <param name="closeStream">if destination stream should be closed</param>
+            <exception cref="T:System.ArgumentException">
+                Thrown when <paramref name="source" /> is not readable or
+                <paramref name="destination" /> is not writable
+            </exception>
+            <exception cref="T:System.ArgumentNullException">Thrown when either of streams is null</exception>
+        </member>
+        <member name="M:CsharpAes.SimpleAes.Encrypt(System.String)">
+            <summary>
+                Encrypts string to bytes using 256bit <c>Rijndael</c> .
+            </summary>
+            <param name="plainText">Text to be encoded</param>
+            <returns>
+                Cipher in bytes
+            </returns>
+        </member>
+        <member name="M:CsharpAes.SimpleAes.Decrypt(System.IO.Stream,System.IO.Stream,System.Boolean)">
+            <summary>
+                Decrypts contents of <paramref name="cipherSource" /> and writes them to <paramref name="destination" />.
+            </summary>
+            <param name="cipherSource">data to encrypt</param>
+            <param name="destination">where to copy to</param>
+            <param name="closeStream">if destination stream should be closed</param>
+            <exception cref="T:System.ArgumentException">
+                Thrown when <paramref name="cipherSource" /> is not readable or
+                <paramref name="destination" /> is not writable
+            </exception>
+            <exception cref="T:System.ArgumentNullException">Thrown when either of streams is null</exception>
+        </member>
+        <member name="M:CsharpAes.SimpleAes.Decrypt(System.Byte[])">
+            <summary>
+                Decrypts <paramref name="cipher" /> back to plaintext
+            </summary>
+            <param name="cipher">Cipher to be decrypted.</param>
+            <returns>
+                Decrypted string
+            </returns>
+            <exception cref="T:System.ArgumentNullException">Thrown when <paramref name="cipher" /> is null</exception>
+            <exception cref="T:CsharpAes.IncorrectPasswordException">Thrown when encryption key doesn't correspond to the correct one</exception>
+        </member>
+        <member name="M:CsharpAes.SimpleAes.ResetIV">
+            <summary>
+                Generate new <see cref="P:CsharpAes.SimpleAes.IV" />. This should be called before each repetitive encryption.
+            </summary>
+        </member>
+        <member name="M:CsharpAes.SimpleAes.ValidateKeySize(System.Byte[])">
+            <summary>
+                Validates the length size of <paramref name="key" />
+            </summary>
+            <param name="key">key to validate</param>
+            <returns>
+                if <paramref name="key" /> is valid
+            </returns>
+        </member>
+        <member name="M:CsharpAes.SimpleAes.DefaultRijndaelInstance">
+            <summary>
+                Gets a default instance of <see cref="T:System.Security.Cryptography.RijndaelManaged" /> with
+                explicitly set block and key sizes.
+            </summary>
+            <remarks>
+                Block size=128, key size=256
+            </remarks>
+            <returns>
+            </returns>
+        </member>
+        <member name="M:CsharpAes.SimpleAes.CheckDisposed">
+            <summary>
+                Checks if instance has already been disposed and throws <see cref="T:System.ObjectDisposedException" /> if yes.
+            </summary>
+            <exception cref="T:System.ObjectDisposedException">Thrown when instance has been disposed</exception>
+        </member>
+        <member name="M:CsharpAes.SimpleAes.Finalize">
+            <inheritdoc />
+        </member>
+        <member name="T:CsharpAes.IncorrectPasswordException">
+            <summary>
+            Empty class. It is used to explicitly tell that it password is incorrect
+            </summary>
+        </member>
+        <member name="M:CsharpAes.IncorrectPasswordException.#ctor">
+            <summary>
+            Initializes a new instance of <see cref="T:CsharpAes.IncorrectPasswordException"/>
+            </summary>
+        </member>
+        <member name="M:CsharpAes.IncorrectPasswordException.#ctor(System.String)">
+            <summary>
+            Initializes a new instance of <see cref="T:CsharpAes.IncorrectPasswordException"/> with a message
+            </summary>
+            <param name="message"></param>
+        </member>
+        <member name="T:CsEncryption.Password256Aes">
+            <summary>
+                Class used to encrypt/decrypt LONG strings using password.
+                Speed is ~20.1 MBps
+            </summary>
+        </member>
+        <member name="F:CsEncryption.Password256Aes.ChecksumLength">
+            <summary>
+                Length generated by Sha1
+            </summary>
+        </member>
+        <member name="F:CsEncryption.Password256Aes.SaltLength">
+            <summary>
+                It can be any value considered safe
+            </summary>
+        </member>
+        <member name="M:CsEncryption.Password256Aes.#ctor(System.String)">
+            <summary>
+                Initializes a new instance of <see cref="T:CsEncryption.Password256Aes" /> class
+            </summary>
+            <param name="password">password protecting the string</param>
+        </member>
+        <member name="P:CsEncryption.Password256Aes.Password">
+            <summary>
+                Password in use, not the EncryptionKey!
+            </summary>
+        </member>
+        <member name="P:CsEncryption.Password256Aes.IVLength">
+            <summary>
+                Length of IV. Bytes of this length are
+                prepended to every encryped string and contain IV itself
+            </summary>
+        </member>
+        <member name="P:CsEncryption.Password256Aes.MinimalCipherLength">
+            <summary>
+                Minimal length of cipher that can be passed for decryption in bytes.
+            </summary>
+        </member>
+        <member name="M:CsEncryption.Password256Aes.Dispose">
+            <inheritdoc/>
+        </member>
+        <member name="M:CsEncryption.Password256Aes.GetKey(System.String,System.Byte[])">
+            <summary>
+                Generates password from password of any length and hash. EncryptionKey is 256bit long.
+            </summary>
+            <param name="password">Any password</param>
+            <param name="salt">Salt to add</param>
+            <returns>EncryptionKey of fixed size 256bit</returns>
+        </member>
+        <member name="M:CsEncryption.Password256Aes.ComputeChecksum(System.String)">
+            <summary>
+                Compute a checksum of a string
+            </summary>
+            <param name="data">string to be hash computed from</param>
+            <returns>hash of length <see cref="F:CsEncryption.Password256Aes.ChecksumLength" /></returns>
+        </member>
+        <member name="M:CsEncryption.Password256Aes.GetRandomSalt">
+            <summary>
+                Generate random salt for password generation
+            </summary>
+            <returns>a random salt of length <see cref="F:CsEncryption.Password256Aes.SaltLength" /></returns>
+        </member>
+        <member name="M:CsEncryption.Password256Aes.GetBytes(System.String)">
+            <summary>
+                Convert string to bytes
+            </summary>
+            <param name="input">string to be converted to bytes</param>
+            <returns>string converted to bytes</returns>
+        </member>
+        <member name="M:CsEncryption.Password256Aes.Encrypt(System.String)">
+            <summary>
+                Encrypts string to bytes using 256bit Rijndael. IV of size <see cref="P:CsEncryption.Password256Aes.IVLength" /> occupies first bytes,
+                then <see cref="F:CsEncryption.Password256Aes.SaltLength" /> salt, <see cref="F:CsEncryption.Password256Aes.ChecksumLength" /> checksum and finally encrypted content.
+            </summary>
+            <param name="plainText">Text to be encoded</param>
+            <returns>Cipher in bytes</returns>
+        </member>
+        <member name="M:CsEncryption.Password256Aes.Encrypt``1(``0)">
+            <summary>
+                Same as <see cref="M:CsEncryption.Password256Aes.Encrypt(System.String)" /> but input argument is object serialized to XML.
+            </summary>
+            <typeparam name="T">Type of object to serialize</typeparam>
+            <param name="obj">Object to be serialized</param>
+            <returns>Encrypted <see cref="!:obj" /></returns>
+        </member>
+        <member name="M:CsEncryption.Password256Aes.Decrypt(System.Byte[])">
+            <summary>
+                Decrypt <paramref name="cipher"/> made by <see cref="M:CsEncryption.Password256Aes.Encrypt(System.String)" /> with known
+                <see>
+                    <cref>_salt</cref>
+                </see>
+                and password.
+            </summary>
+            <param name="cipher">Cipher to be decrypted.</param>
+            <returns>Decrypted string</returns>
+        </member>
+        <member name="M:CsEncryption.Password256Aes.Decrypt``1(System.Byte[])">
+            <summary>
+                Deserializes <see langword="byte"/>[] generated by generic <see cref="M:CsEncryption.Password256Aes.Encrypt(System.String)" />
+            </summary>
+            <typeparam name="T">Type of object serialized</typeparam>
+            <param name="cipher">Output of <see cref="M:CsEncryption.Password256Aes.Encrypt(System.String)" /></param>
+            <returns>Deserialized object</returns>
+        </member>
+    </members>
+</doc>
