@@ -46,6 +46,7 @@
             this.statusBackPictureBox = new System.Windows.Forms.PictureBox();
             this.windowElementsRefresh = new System.Windows.Forms.Timer(this.components);
             this.currentFileLabel = new System.Windows.Forms.Label();
+            this.infosLabel = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.barPictureBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.mailPictureBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.statusPictureBox)).BeginInit();
@@ -148,9 +149,9 @@
             this.titleLabel.Font = new System.Drawing.Font("Berlin Sans FB", 36F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.titleLabel.ForeColor = System.Drawing.Color.SteelBlue;
             this.titleLabel.Location = new System.Drawing.Point(0, 110);
-            this.titleLabel.MinimumSize = new System.Drawing.Size(700, 300);
+            this.titleLabel.MinimumSize = new System.Drawing.Size(700, 200);
             this.titleLabel.Name = "titleLabel";
-            this.titleLabel.Size = new System.Drawing.Size(700, 300);
+            this.titleLabel.Size = new System.Drawing.Size(700, 200);
             this.titleLabel.TabIndex = 7;
             this.titleLabel.Text = "MailStorage";
             this.titleLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -253,12 +254,27 @@
             this.currentFileLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.currentFileLabel.Visible = false;
             // 
+            // infosLabel
+            // 
+            this.infosLabel.AutoEllipsis = true;
+            this.infosLabel.AutoSize = true;
+            this.infosLabel.Font = new System.Drawing.Font("Berlin Sans FB", 10.125F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.infosLabel.ForeColor = System.Drawing.Color.SteelBlue;
+            this.infosLabel.Location = new System.Drawing.Point(5, 310);
+            this.infosLabel.MaximumSize = new System.Drawing.Size(690, 100);
+            this.infosLabel.MinimumSize = new System.Drawing.Size(690, 100);
+            this.infosLabel.Name = "infosLabel";
+            this.infosLabel.Size = new System.Drawing.Size(690, 100);
+            this.infosLabel.TabIndex = 15;
+            this.infosLabel.Text = "Dossier\r\nMail";
+            // 
             // MailStorage
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(12F, 25F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.AliceBlue;
             this.ClientSize = new System.Drawing.Size(700, 750);
+            this.Controls.Add(this.infosLabel);
             this.Controls.Add(this.statusPictureBox);
             this.Controls.Add(this.currentFileLabel);
             this.Controls.Add(this.statusBackPictureBox);
@@ -305,6 +321,7 @@
         private System.Windows.Forms.PictureBox statusBackPictureBox;
         private System.Windows.Forms.Timer windowElementsRefresh;
         private System.Windows.Forms.Label currentFileLabel;
+        private System.Windows.Forms.Label infosLabel;
     }
 }
 

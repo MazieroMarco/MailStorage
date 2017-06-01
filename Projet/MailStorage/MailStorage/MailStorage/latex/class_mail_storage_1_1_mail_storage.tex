@@ -1,0 +1,118 @@
+\hypertarget{class_mail_storage_1_1_mail_storage}{}\section{Mail\+Storage.\+Mail\+Storage Class Reference}
+\label{class_mail_storage_1_1_mail_storage}\index{Mail\+Storage.\+Mail\+Storage@{Mail\+Storage.\+Mail\+Storage}}
+
+
+The window main class  
+
+
+Inheritance diagram for Mail\+Storage.\+Mail\+Storage\+:\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[height=2.000000cm]{class_mail_storage_1_1_mail_storage}
+\end{center}
+\end{figure}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_mail_storage_1_1_mail_storage_a57cf4c19f36b8c6cba262eb476ef5a08}\label{class_mail_storage_1_1_mail_storage_a57cf4c19f36b8c6cba262eb476ef5a08}} 
+static int {\bfseries Send\+Message} (Int\+Ptr h\+Wnd, int Msg, int w\+Param, int l\+Param)
+\item 
+\mbox{\Hypertarget{class_mail_storage_1_1_mail_storage_a7a15caac592591ca913d6fb12cf58488}\label{class_mail_storage_1_1_mail_storage_a7a15caac592591ca913d6fb12cf58488}} 
+static bool {\bfseries Release\+Capture} ()
+\item 
+\hyperlink{class_mail_storage_1_1_mail_storage_aa83a233c9413b11ed949ade4a1ed6a23}{Mail\+Storage} ()
+\begin{DoxyCompactList}\small\item\em Class constructor \end{DoxyCompactList}\item 
+async void \hyperlink{class_mail_storage_1_1_mail_storage_a3be6ac5a1a821602bd40289b48ef34cb}{Initialize\+Window} ()
+\begin{DoxyCompactList}\small\item\em Initializes the window when called \end{DoxyCompactList}\item 
+void \hyperlink{class_mail_storage_1_1_mail_storage_a6786eea13365af4431e55937b52b8e22}{Update\+Current\+File} (string str\+Text)
+\begin{DoxyCompactList}\small\item\em Updates the current file status label \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_mail_storage_1_1_mail_storage_a18b7c003fb2e0224c49170ce3860b776}\label{class_mail_storage_1_1_mail_storage_a18b7c003fb2e0224c49170ce3860b776}} 
+const int {\bfseries W\+M\+\_\+\+N\+C\+L\+B\+U\+T\+T\+O\+N\+D\+O\+WN} = 0x\+A1
+\item 
+\mbox{\Hypertarget{class_mail_storage_1_1_mail_storage_a2fda94acfe6689309e7a686d80df2282}\label{class_mail_storage_1_1_mail_storage_a2fda94acfe6689309e7a686d80df2282}} 
+const int {\bfseries H\+T\+\_\+\+C\+A\+P\+T\+I\+ON} = 0x2
+\item 
+\mbox{\Hypertarget{class_mail_storage_1_1_mail_storage_a67aceb1c37ff2921d1263c5a3d5ad256}\label{class_mail_storage_1_1_mail_storage_a67aceb1c37ff2921d1263c5a3d5ad256}} 
+Task {\bfseries initial\+Sync}
+\item 
+\mbox{\Hypertarget{class_mail_storage_1_1_mail_storage_ab06602e92c2881e496b03852e2732729}\label{class_mail_storage_1_1_mail_storage_ab06602e92c2881e496b03852e2732729}} 
+Task {\bfseries global\+Refresh}
+\item 
+\mbox{\Hypertarget{class_mail_storage_1_1_mail_storage_a9b813f6d46a8e4d5ac8103648a161a0c}\label{class_mail_storage_1_1_mail_storage_a9b813f6d46a8e4d5ac8103648a161a0c}} 
+Task {\bfseries get\+Quota}
+\end{DoxyCompactItemize}
+\subsection*{Protected Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+override void \hyperlink{class_mail_storage_1_1_mail_storage_a08abad1b434fac866b442755bed1c9f8}{Dispose} (bool disposing)
+\begin{DoxyCompactList}\small\item\em Nettoyage des ressources utilisées. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+The window main class 
+
+
+
+\subsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{class_mail_storage_1_1_mail_storage_aa83a233c9413b11ed949ade4a1ed6a23}\label{class_mail_storage_1_1_mail_storage_aa83a233c9413b11ed949ade4a1ed6a23}} 
+\index{Mail\+Storage\+::\+Mail\+Storage@{Mail\+Storage\+::\+Mail\+Storage}!Mail\+Storage@{Mail\+Storage}}
+\index{Mail\+Storage@{Mail\+Storage}!Mail\+Storage\+::\+Mail\+Storage@{Mail\+Storage\+::\+Mail\+Storage}}
+\subsubsection{\texorpdfstring{Mail\+Storage()}{MailStorage()}}
+{\footnotesize\ttfamily Mail\+Storage.\+Mail\+Storage.\+Mail\+Storage (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Class constructor 
+
+
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{class_mail_storage_1_1_mail_storage_a08abad1b434fac866b442755bed1c9f8}\label{class_mail_storage_1_1_mail_storage_a08abad1b434fac866b442755bed1c9f8}} 
+\index{Mail\+Storage\+::\+Mail\+Storage@{Mail\+Storage\+::\+Mail\+Storage}!Dispose@{Dispose}}
+\index{Dispose@{Dispose}!Mail\+Storage\+::\+Mail\+Storage@{Mail\+Storage\+::\+Mail\+Storage}}
+\subsubsection{\texorpdfstring{Dispose()}{Dispose()}}
+{\footnotesize\ttfamily override void Mail\+Storage.\+Mail\+Storage.\+Dispose (\begin{DoxyParamCaption}\item[{bool}]{disposing }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [protected]}}
+
+
+
+Nettoyage des ressources utilisées. 
+
+
+\begin{DoxyParams}{Parameters}
+{\em disposing} & true si les ressources managées doivent être supprimées ; sinon, false.\\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{class_mail_storage_1_1_mail_storage_a3be6ac5a1a821602bd40289b48ef34cb}\label{class_mail_storage_1_1_mail_storage_a3be6ac5a1a821602bd40289b48ef34cb}} 
+\index{Mail\+Storage\+::\+Mail\+Storage@{Mail\+Storage\+::\+Mail\+Storage}!Initialize\+Window@{Initialize\+Window}}
+\index{Initialize\+Window@{Initialize\+Window}!Mail\+Storage\+::\+Mail\+Storage@{Mail\+Storage\+::\+Mail\+Storage}}
+\subsubsection{\texorpdfstring{Initialize\+Window()}{InitializeWindow()}}
+{\footnotesize\ttfamily async void Mail\+Storage.\+Mail\+Storage.\+Initialize\+Window (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Initializes the window when called 
+
+\mbox{\Hypertarget{class_mail_storage_1_1_mail_storage_a6786eea13365af4431e55937b52b8e22}\label{class_mail_storage_1_1_mail_storage_a6786eea13365af4431e55937b52b8e22}} 
+\index{Mail\+Storage\+::\+Mail\+Storage@{Mail\+Storage\+::\+Mail\+Storage}!Update\+Current\+File@{Update\+Current\+File}}
+\index{Update\+Current\+File@{Update\+Current\+File}!Mail\+Storage\+::\+Mail\+Storage@{Mail\+Storage\+::\+Mail\+Storage}}
+\subsubsection{\texorpdfstring{Update\+Current\+File()}{UpdateCurrentFile()}}
+{\footnotesize\ttfamily void Mail\+Storage.\+Mail\+Storage.\+Update\+Current\+File (\begin{DoxyParamCaption}\item[{string}]{str\+Text }\end{DoxyParamCaption})}
+
+
+
+Updates the current file status label 
+
+
+\begin{DoxyParams}{Parameters}
+{\em str\+Text} & \\
+\hline
+\end{DoxyParams}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+Mail\+Storage.\+cs\item 
+Mail\+Storage.\+Designer.\+cs\end{DoxyCompactItemize}

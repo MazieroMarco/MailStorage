@@ -41,6 +41,7 @@ namespace MailStorage
         public Task globalRefresh;
         public Task getQuota;
         private bool blnAppCrash = false;
+        private bool blnAppFirstSync = true;
         private readonly FileSystemWatcher rootFolderWatcher = new FileSystemWatcher();
 
         /// <summary>
@@ -50,6 +51,9 @@ namespace MailStorage
         {
             // Initializes all the window components
             InitializeComponent();
+
+            // Sets the window icon
+            this.Icon = new Icon("appIcon.ico");
 
             // Adds this window to the globals
             Globals.mainWindow = this;
@@ -73,13 +77,22 @@ namespace MailStorage
         /// <summary>
         /// Initializes the window when called
         /// </summary>
-        public void InitializeWindow()
+        public async void InitializeWindow()
         {
+            // Sets the infos label text
+            infosLabel.Text = "Dossier  " + Globals.ROOT_DIRECTORY + "\n" +
+                              "Mail     " + Globals.USER_MAIL_ADDRESS;
+
+            // Updates the disk space value
+            UpdateMailboxSpace();
+
             // Checks for the initial sync
             if (Globals.NEED_INITIAL_SYNC)
             {
                 // Starts the task and the synchronisation
                 initialSync = Task.Factory.StartNew(FilesManager.InitialSynchronisation);
+
+                await initialSync;
 
                 // Sets the variable to false
                 Globals.NEED_INITIAL_SYNC = false;
@@ -92,8 +105,11 @@ namespace MailStorage
             if (!rootFolderWatcher.EnableRaisingEvents)
                 rootFolderWatcher.EnableRaisingEvents = true;
 
-            // Updates the disk space value
-            UpdateMailboxSpace();
+            // Starts the first synchronisation
+            SynchronizeFiles(null, null);
+
+            // Updates the index mail
+            FilesManager.UpdateDirectoriesIndex();
         }
 
         /// <summary>
@@ -355,13 +371,30 @@ namespace MailStorage
                 // Waits before sync
                 Thread.Sleep(3000);
 
+                // Updates the index mail
+                FilesManager.UpdateDirectoriesIndex();
+
                 // Updates the lists
                 FilesManager.UpdateLocalFiles();
                 FilesManager.UpdateRemoteFiles();
 
+                // If the app has just started, downloads all the remaining files from the mailbox
+                if (blnAppFirstSync)
+                {
+                    // Download the missing files
+                    FilesManager.StartUpdateFromMailBox();
+
+                    // Updates the lists
+                    FilesManager.UpdateLocalFiles();
+                    FilesManager.UpdateRemoteFiles();
+
+                    // Disables the boolean
+                    blnAppFirstSync = false;
+                }
+
                 // Updates the files
                 FilesManager.AddLocalFilesToMailBox();
-                FilesManager.DeleteRemotesFilesFromLocal();
+                FilesManager.DeleteRemoteFilesFromLocal();
 
                 // Updates the disk space value
                 UpdateMailboxSpace();

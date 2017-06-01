@@ -13,6 +13,7 @@ using System.Windows.Forms;
 using MailKit;
 using MailKit.Net.Imap;
 using MimeKit;
+using MimeKit.Text;
 
 namespace MailStorage
 {
@@ -129,6 +130,44 @@ namespace MailStorage
         }
 
         /// <summary>
+        /// Repaces the old index mail with the new one
+        /// </summary>
+        /// <param name="indexBody">All the folders in text to put in the mail body</param>
+        public static void UpdateIndexMail(string indexBody)
+        {
+            // Gets all the mails subjects
+            var allSubjects = GetAllMailSubjects(true);
+
+            // Checks if the index mail exists in the mailbox
+            if (allSubjects.Any(a => a == Globals.INDEX_MAIL_SUBJECT))
+            {
+                // Opens the MailStorage folder
+                var mailStorageFolder = imapCli.GetFolder("MailStorage");
+                mailStorageFolder.Open(FolderAccess.ReadWrite);
+
+                // Goes through all the mails informations
+                foreach (var mailInfo in mailStorageFolder.Fetch(0, -1, MessageSummaryItems.Full | MessageSummaryItems.UniqueId))
+                {
+                    // Checks if the paths matches
+                    if (mailInfo.Envelope.Subject == Globals.INDEX_MAIL_SUBJECT)
+                    {
+                        // Deletes the file
+                        mailStorageFolder.AddFlags(new[] { mailInfo.UniqueId }, MessageFlags.Deleted, true);
+
+                        // Applies the delete and closes the folder
+                        mailStorageFolder.Close(true);
+
+                        // Returns
+                        break;
+                    }
+                }
+            }
+
+            // Adds the new index mail to the mailbox
+            SendMailToStorage(Globals.INDEX_MAIL_SUBJECT, indexBody);
+        }
+
+        /// <summary>
         /// Deletes a specified file in the mailbox
         /// </summary>
         /// <param name="fileToDelete">The file to delete</param>
@@ -160,7 +199,7 @@ namespace MailStorage
         /// Gets only the subject of all the MailStorage folder mails
         /// </summary>
         /// <returns>List with all the subject strings</returns>
-        public static List<string> GetAllMailSubjects()
+        public static List<string> GetAllMailSubjects(bool indexIncluded = false)
         {
             // Variables declaration
             var subjectList = new List<string>();
@@ -184,10 +223,14 @@ namespace MailStorage
 
             // Goes through all the mails informations
             foreach (var mailInfo in mailStorageFolder.Fetch(0, -1, MessageSummaryItems.Full | MessageSummaryItems.UniqueId))
-                subjectList.Add(mailInfo.Envelope.Subject);
+            {
+                // If it's not the index mail
+                if (mailInfo.Envelope.Subject != Globals.INDEX_MAIL_SUBJECT || indexIncluded)
+                    subjectList.Add(mailInfo.Envelope.Subject);
+            }
 
             // Closes the folder
-            mailStorageFolder.Close(false);
+            mailStorageFolder.Close();
 
             // Returns the subjects list
             return subjectList;
@@ -225,6 +268,9 @@ namespace MailStorage
                 // Gets the message
                 var newMessage = mailStorageFolder.GetMessage(i);
 
+                // Checks if it's not the index mail
+                if (newMessage.Subject == Globals.INDEX_MAIL_SUBJECT) continue;
+
                 // Adds the message to the list
                 mailsList.Add(newMessage);
 
@@ -237,6 +283,53 @@ namespace MailStorage
 
             // Returns the mails list
             return mailsList;
+        }
+
+        /// <summary>
+        /// Gets the index mail with all the folders
+        /// </summary>
+        /// <returns>Returns a string with all the folders</returns>
+        public static MimeMessage GetOneMail(bool isIndex = true, AppFile fileToGet = null)
+        {
+            // Opens the MailStorage folder
+            var mailStorageFolder = imapCli.GetFolder("MailStorage");
+
+            // Opens the mailstorage folder
+            for (;;)
+            {
+                try
+                {
+                    mailStorageFolder.Open(FolderAccess.ReadOnly);
+                    break;
+                }
+                catch
+                {
+                    // Ignored
+                }
+            }
+
+            // Defines the index mail variable
+            MimeMessage wantedMail = null;
+
+            // Goes through all the mails informations and gets the index mail id
+            foreach (var mailInfo in mailStorageFolder.Fetch(0, -1, MessageSummaryItems.Full | MessageSummaryItems.UniqueId))
+            {
+                if (isIndex && mailInfo.Envelope.Subject == Globals.INDEX_MAIL_SUBJECT || !isIndex && mailInfo.Envelope.Subject.Split(new[] { "::" }, StringSplitOptions.None)[1] == fileToGet.filePath)
+                {
+                    // Downloads the mail
+                    wantedMail = mailStorageFolder.GetMessage(mailInfo.UniqueId);
+
+                    // Sets the file status label
+                    if (!isIndex)
+                        Globals.mainWindow.UpdateCurrentFile("Téléchargement du fichier\n" + wantedMail.Subject.Split(new[] { "::" }, StringSplitOptions.None)[1]);
+                }
+            }
+
+            // Closes the folder
+            mailStorageFolder.Close();
+
+            // Returns the index mail body
+            return wantedMail;
         }
 
         /// <summary>

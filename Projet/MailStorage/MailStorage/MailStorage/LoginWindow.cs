@@ -44,6 +44,9 @@ namespace MailStorage
             // Initializes all the window components
             InitializeComponent();
 
+            // Sets the window icon
+            this.Icon = new Icon("appIcon.ico");
+
             // Adds this window to the globals
             Globals.loginWindow = this;
         }

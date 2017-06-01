@@ -106,6 +106,19 @@ namespace MailStorage
                 }
             }
 
+            // Gets the directories list
+            var allDirectories = MailManager.GetOneMail().TextBody.Split(new[] { "::" }, StringSplitOptions.None).ToList();
+
+            // Creates all the directories in the root folder
+            foreach (var folder in allDirectories)
+            {
+                // Sets the file status label
+                Globals.mainWindow.UpdateCurrentFile("Création du dossier\n" + folder);
+
+                // Creates the directory
+                Directory.CreateDirectory(Globals.ROOT_DIRECTORY + folder.Substring(1));
+            }
+
             // Gets all the mails from the mailbox
             var allMails = MailManager.GetAllMails();
 
@@ -133,6 +146,96 @@ namespace MailStorage
         }
 
         /// <summary>
+        /// Updates the local folder state by downloading all the missing files from the mailbox and deleting the files that have to be deleted
+        /// </summary>
+        public static void StartUpdateFromMailBox()
+        {
+            // Goes through each local file
+            foreach (var localFile in Globals.LOCAL_FILES)
+            {
+                // Checks if the file is not in the mail files
+                if (!Globals.MAIL_FILES.Any(a => a.filePath == localFile.filePath &&
+                                                 a.fileModificationDate.ToString() == localFile.fileModificationDate.ToString()))
+                {
+                    // Gets the mail full path
+                    var fullPath = Globals.ROOT_DIRECTORY + localFile.filePath.Substring(1);
+
+                    // Deletes the file
+                    if (File.Exists(fullPath))
+                    {
+                        try
+                        {
+                            File.Delete(fullPath);
+                        }
+                        catch (Exception e)
+                        {
+                            // Gets the file information
+                            var infos = new FileInfo(fullPath);
+
+                            // Displays the error message
+                            MessageBox.Show("Impossible de supprimer le fichier " + infos.Name + "\n\n" +
+                                            "Erreur : " + e.Message);
+                        }
+                    }
+                }
+            }
+
+            // Goes through each mail list element
+            foreach (var remoteFile in Globals.MAIL_FILES)
+            {
+                // Checks if the remote file is in the local folder
+                if (!Globals.LOCAL_FILES.Any(a => a.filePath == remoteFile.filePath &&
+                                                  a.fileModificationDate.ToString() == remoteFile.fileModificationDate.ToString()))
+                {
+                    // The file doesn't exist or is more recent, downloads it
+                    var downloadedFile = MailManager.GetOneMail(false, remoteFile);
+
+                    // If no root folder, abort
+                    if (!Directory.Exists(Globals.ROOT_DIRECTORY))
+                        return;
+
+                    // Splits the mail subject to get info
+                    var mailInfos = downloadedFile.Subject.Split(new[] {"::"}, StringSplitOptions.None);
+
+                    // Gets the mail full path
+                    var fullPath = Globals.ROOT_DIRECTORY + mailInfos[1].Substring(1);
+
+                    // Deletes the old file if exists
+                    if (File.Exists(fullPath))
+                    {
+                        try
+                        {
+                            File.Delete(fullPath);
+                        }
+                        catch (Exception e)
+                        {
+                            // Gets the file information
+                            var infos = new FileInfo(fullPath);
+
+                            // Displays the error message
+                            MessageBox.Show("Impossible de supprimer le fichier " + infos.Name + "\n\n" +
+                                            "Erreur : " + e.Message);
+
+                            // Sets a unique name for the file
+                            Random rnd = new Random();
+                            fullPath = Globals.ROOT_DIRECTORY + mailInfos[1].Substring(1, mailInfos[1].Length - 4) +
+                                       "_more_recent_" + rnd.Next(10000, 90000) +
+                                       mailInfos[1].Substring(mailInfos[1].Length - 4);
+                        }
+                    }
+
+                    // Creates the file from base64
+                    new FileInfo(fullPath).Directory.Create();
+                    File.WriteAllBytes(fullPath, Convert.FromBase64String(downloadedFile.TextBody));
+
+                    // Sets the file creation and edit time
+                    File.SetCreationTime(fullPath, DateTime.Parse(mailInfos[2]));
+                    File.SetLastWriteTime(fullPath, DateTime.Parse(mailInfos[3]));
+                }
+            }
+        }
+
+        /// <summary>
         /// Updates the local files list, adds the new files and removes the deleted ones
         /// </summary>
         public static void UpdateLocalFiles()
@@ -145,9 +248,17 @@ namespace MailStorage
             {
                 var blnExists = false;
 
-                // Goes through all the files in the directory
-                foreach (var localFile in Directory.GetFiles(Globals.ROOT_DIRECTORY, "*", SearchOption.AllDirectories))
+                // Gets all the visible files in the directory
+                DirectoryInfo directory = new DirectoryInfo(Globals.ROOT_DIRECTORY);
+                FileInfo[] allFiles = directory.GetFiles("*", SearchOption.AllDirectories);
+                var filteredFiles = allFiles.Where(a => !a.Attributes.HasFlag(FileAttributes.Hidden));
+
+                // Goes through all the visible files in the directory
+                foreach (var localFileInfo in filteredFiles)
                 {
+                    // Gets the file path
+                    var localFile = localFileInfo.ToString();
+
                     // Gets the file informations
                     var fileInformations = new FileInfo(localFile);
 
@@ -184,7 +295,7 @@ namespace MailStorage
                 var newFile = new AppFile(mailInfos[0], mailInfos[1], DateTime.Parse(mailInfos[2]), DateTime.Parse(mailInfos[3]));
 
                 // Checks if the file is already in the list
-                if (Globals.MAIL_FILES.All(a => a.filePath != newFile.filePath))
+                if (!Globals.MAIL_FILES.Any(a => a.filePath == newFile.filePath && a.fileModificationDate == newFile.fileModificationDate))
                 {
                     // The file does not exist, adds it
                     Globals.MAIL_FILES.Add(newFile);
@@ -203,10 +314,10 @@ namespace MailStorage
                 foreach (var remoteFile in mailSubjects)
                 {
                     // Gets the file path
-                    var filePath = remoteFile.Split(new [] { "::" }, StringSplitOptions.None)[1];
+                    var fileInformations = remoteFile.Split(new [] { "::" }, StringSplitOptions.None);
 
                     // Checks if the files still exists
-                    if (listFilePath == filePath)
+                    if (listFilePath == fileInformations[1] && Globals.MAIL_FILES.FirstOrDefault(a => a.filePath == listFilePath).fileModificationDate.ToString() == fileInformations[3])
                         blnExists = true;
                 }
 
@@ -251,7 +362,7 @@ namespace MailStorage
         /// <summary>
         /// Deletes the files in the mailbox that are not present in the local directory 
         /// </summary>
-        public static void DeleteRemotesFilesFromLocal()
+        public static void DeleteRemoteFilesFromLocal()
         {
             // Goes through all the mail files list
             foreach (var remoteFile in Globals.MAIL_FILES)
@@ -279,6 +390,34 @@ namespace MailStorage
         }
 
         /// <summary>
+        /// Gets all the directories in the folder and crats the updates version of the index mail
+        /// </summary>
+        public static void UpdateDirectoriesIndex()
+        {
+            // Sets the file status label
+            Globals.mainWindow.UpdateCurrentFile("Indexation des dossiers");
+
+            // Gets all the folders in the root
+            var allDirectories = Directory.GetDirectories(Globals.ROOT_DIRECTORY, "*", SearchOption.AllDirectories);
+
+            // Defines the index mail content
+            string strMailContent = "";
+
+            // Adds each folder in the content
+            foreach (var folder in allDirectories)
+            {
+                strMailContent += folder.Replace(Globals.ROOT_DIRECTORY, @".") + "::";
+            }
+
+            // Deletes the last "::"
+            if (strMailContent.Length > 0)
+                strMailContent = strMailContent.Substring(0, strMailContent.Length - 2);
+
+            // Sends the mail to the mailbox
+            MailManager.UpdateIndexMail(strMailContent);
+        }
+
+        /// <summary>
         /// Converts a file to base64 string
         /// </summary>
         /// <param name="fileToConvert">The file to convert</param>
@@ -289,9 +428,17 @@ namespace MailStorage
             {
                 try
                 {
-                    return Convert.ToBase64String(File.ReadAllBytes(Globals.ROOT_DIRECTORY + fileToConvert.filePath.Substring(1)));
+                    byte[] fileData;
+
+                    using (var fs = File.Open(Globals.ROOT_DIRECTORY + fileToConvert.filePath.Substring(1), FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+                    {
+                        var binaryReader = new BinaryReader(fs);
+                        fileData = binaryReader.ReadBytes((int)fs.Length);
+                    }
+
+                    return Convert.ToBase64String(fileData);
                 }
-                catch
+                catch(Exception ex)
                 {
                     // Ignored
                 }

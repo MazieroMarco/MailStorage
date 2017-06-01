@@ -352,10 +352,12 @@
             // 
             this.loadingBack.AutoSize = true;
             this.loadingBack.Location = new System.Drawing.Point(0, 50);
+            this.loadingBack.MaximumSize = new System.Drawing.Size(700, 700);
             this.loadingBack.MinimumSize = new System.Drawing.Size(700, 700);
             this.loadingBack.Name = "loadingBack";
             this.loadingBack.Size = new System.Drawing.Size(700, 700);
             this.loadingBack.TabIndex = 23;
+            this.loadingBack.Visible = false;
             // 
             // LoginWindow
             // 
@@ -365,12 +367,15 @@
             this.ClientSize = new System.Drawing.Size(700, 750);
             this.Controls.Add(this.loadingLabel);
             this.Controls.Add(this.loadingImage);
-            this.Controls.Add(this.loadingBack);
             this.Controls.Add(this.portErrorLabel);
             this.Controls.Add(this.serverErrorLabel);
             this.Controls.Add(this.passwordErrorLabel);
             this.Controls.Add(this.pathErrorLabel);
             this.Controls.Add(this.mailErrorLabel);
+            this.Controls.Add(this.mailPictureBox);
+            this.Controls.Add(this.exitButton);
+            this.Controls.Add(this.barPictureBox);
+            this.Controls.Add(this.loadingBack);
             this.Controls.Add(this.validateButton);
             this.Controls.Add(this.pathButton);
             this.Controls.Add(this.pathTextBox);
@@ -378,15 +383,12 @@
             this.Controls.Add(this.passwordTextBox);
             this.Controls.Add(this.passwordLabel);
             this.Controls.Add(this.portTextBox);
-            this.Controls.Add(this.portLabel);
             this.Controls.Add(this.mailTextBox);
             this.Controls.Add(this.mailLabel);
             this.Controls.Add(this.serverTextBox);
             this.Controls.Add(this.serverLabel);
+            this.Controls.Add(this.portLabel);
             this.Controls.Add(this.titleLabel);
-            this.Controls.Add(this.mailPictureBox);
-            this.Controls.Add(this.exitButton);
-            this.Controls.Add(this.barPictureBox);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.MaximizeBox = false;
             this.MinimizeBox = false;

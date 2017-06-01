@@ -1,0 +1,78 @@
+\hypertarget{class_mail_storage_1_1_db_manager}{}\section{Mail\+Storage.\+Db\+Manager Class Reference}
+\label{class_mail_storage_1_1_db_manager}\index{Mail\+Storage.\+Db\+Manager@{Mail\+Storage.\+Db\+Manager}}
+
+
+Manages all the interaction with the S\+Q\+Lite database  
+
+
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{class_mail_storage_1_1_db_manager_a2fce4fc8a19fd0f0de40091d2dc96931}{Db\+Manager} ()
+\begin{DoxyCompactList}\small\item\em Class constructor, creates the database if it doesn\textquotesingle{}t exist \end{DoxyCompactList}\item 
+void \hyperlink{class_mail_storage_1_1_db_manager_a862704b090f1a99e33682f701c6f8ba2}{Update\+User\+Data} (string server\+Name, string server\+Port, string user\+Mail, string user\+Password, string dir\+Path)
+\begin{DoxyCompactList}\small\item\em Inserts all the data into the database \end{DoxyCompactList}\item 
+List$<$ string $>$ \hyperlink{class_mail_storage_1_1_db_manager_add360de0a5bb47870412e69741da22f3}{Get\+Current\+User\+Data} ()
+\begin{DoxyCompactList}\small\item\em Gets the registered user from the database \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Manages all the interaction with the S\+Q\+Lite database 
+
+
+
+\subsection{Constructor \& Destructor Documentation}
+\mbox{\Hypertarget{class_mail_storage_1_1_db_manager_a2fce4fc8a19fd0f0de40091d2dc96931}\label{class_mail_storage_1_1_db_manager_a2fce4fc8a19fd0f0de40091d2dc96931}} 
+\index{Mail\+Storage\+::\+Db\+Manager@{Mail\+Storage\+::\+Db\+Manager}!Db\+Manager@{Db\+Manager}}
+\index{Db\+Manager@{Db\+Manager}!Mail\+Storage\+::\+Db\+Manager@{Mail\+Storage\+::\+Db\+Manager}}
+\subsubsection{\texorpdfstring{Db\+Manager()}{DbManager()}}
+{\footnotesize\ttfamily Mail\+Storage.\+Db\+Manager.\+Db\+Manager (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Class constructor, creates the database if it doesn\textquotesingle{}t exist 
+
+
+
+\subsection{Member Function Documentation}
+\mbox{\Hypertarget{class_mail_storage_1_1_db_manager_add360de0a5bb47870412e69741da22f3}\label{class_mail_storage_1_1_db_manager_add360de0a5bb47870412e69741da22f3}} 
+\index{Mail\+Storage\+::\+Db\+Manager@{Mail\+Storage\+::\+Db\+Manager}!Get\+Current\+User\+Data@{Get\+Current\+User\+Data}}
+\index{Get\+Current\+User\+Data@{Get\+Current\+User\+Data}!Mail\+Storage\+::\+Db\+Manager@{Mail\+Storage\+::\+Db\+Manager}}
+\subsubsection{\texorpdfstring{Get\+Current\+User\+Data()}{GetCurrentUserData()}}
+{\footnotesize\ttfamily List$<$string$>$ Mail\+Storage.\+Db\+Manager.\+Get\+Current\+User\+Data (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption})}
+
+
+
+Gets the registered user from the database 
+
+\begin{DoxyReturn}{Returns}
+Returns a list with all the data
+\end{DoxyReturn}
+\mbox{\Hypertarget{class_mail_storage_1_1_db_manager_a862704b090f1a99e33682f701c6f8ba2}\label{class_mail_storage_1_1_db_manager_a862704b090f1a99e33682f701c6f8ba2}} 
+\index{Mail\+Storage\+::\+Db\+Manager@{Mail\+Storage\+::\+Db\+Manager}!Update\+User\+Data@{Update\+User\+Data}}
+\index{Update\+User\+Data@{Update\+User\+Data}!Mail\+Storage\+::\+Db\+Manager@{Mail\+Storage\+::\+Db\+Manager}}
+\subsubsection{\texorpdfstring{Update\+User\+Data()}{UpdateUserData()}}
+{\footnotesize\ttfamily void Mail\+Storage.\+Db\+Manager.\+Update\+User\+Data (\begin{DoxyParamCaption}\item[{string}]{server\+Name,  }\item[{string}]{server\+Port,  }\item[{string}]{user\+Mail,  }\item[{string}]{user\+Password,  }\item[{string}]{dir\+Path }\end{DoxyParamCaption})}
+
+
+
+Inserts all the data into the database 
+
+
+\begin{DoxyParams}{Parameters}
+{\em server\+Name} & The I\+M\+AP server name\\
+\hline
+{\em server\+Port} & The server port\\
+\hline
+{\em user\+Mail} & The user mail address\\
+\hline
+{\em user\+Password} & The user password\\
+\hline
+{\em dir\+Path} & The root directory path\\
+\hline
+\end{DoxyParams}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+Db\+Manager.\+cs\end{DoxyCompactItemize}

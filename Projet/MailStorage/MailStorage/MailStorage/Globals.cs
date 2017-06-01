@@ -4,6 +4,8 @@
 /// Description : Contains all the program globals and constants
 
 using System.Collections.Generic;
+using System.Linq;
+using System.Net.NetworkInformation;
 
 namespace MailStorage
 {
@@ -28,5 +30,6 @@ namespace MailStorage
         public static List<AppFile> MAIL_FILES = new List<AppFile>();               // The list with all the remote mail files paths
 
         public static bool NEED_INITIAL_SYNC = false;        // Used to execute the initial sync in the root folder
+        public static string INDEX_MAIL_SUBJECT = "::MAILSTORAGE::INDEX::DIRECTORIES::";    // The subject of the index mail
     }
 }
