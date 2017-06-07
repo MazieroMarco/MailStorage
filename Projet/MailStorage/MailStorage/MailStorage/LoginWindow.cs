@@ -165,8 +165,8 @@ namespace MailStorage
                 // Waits for the task to finish
                 await connectImap;
 
-                // If the connection result is true, goes on, if not, goes back to the login window
-                if (connectionResult)
+                // If the connection result is true, goes on, if not, goes back to the login window. Also creates the 
+                if (connectionResult && MailManager.CreateStorageFolder())
                 {
                     // Crypts the user password
                     var aesPwdKey = new PasswordAes(Globals.PASSWORD_KEY);
@@ -175,9 +175,6 @@ namespace MailStorage
                     // Connection successful, saves the user data into the database
                     var db = new DbManager();
                     db.UpdateUserData(serverTextBox.Text, portTextBox.Text, mailTextBox.Text, cryptedPwd, pathTextBox.Text);
-
-                    // Creates the mailstorage folder in the mailbox
-                    MailManager.CreateStorageFolder();
 
                     // Hides this window and displays the main one
                     Globals.loginWindow.Hide();

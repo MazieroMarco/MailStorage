@@ -46,7 +46,8 @@
             this.statusBackPictureBox = new System.Windows.Forms.PictureBox();
             this.windowElementsRefresh = new System.Windows.Forms.Timer(this.components);
             this.currentFileLabel = new System.Windows.Forms.Label();
-            this.infosLabel = new System.Windows.Forms.Label();
+            this.infosFolderLabel = new System.Windows.Forms.Label();
+            this.infosMailLabel = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.barPictureBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.mailPictureBox)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.statusPictureBox)).BeginInit();
@@ -254,19 +255,35 @@
             this.currentFileLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             this.currentFileLabel.Visible = false;
             // 
-            // infosLabel
+            // infosFolderLabel
             // 
-            this.infosLabel.AutoEllipsis = true;
-            this.infosLabel.AutoSize = true;
-            this.infosLabel.Font = new System.Drawing.Font("Berlin Sans FB", 10.125F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.infosLabel.ForeColor = System.Drawing.Color.SteelBlue;
-            this.infosLabel.Location = new System.Drawing.Point(5, 310);
-            this.infosLabel.MaximumSize = new System.Drawing.Size(690, 100);
-            this.infosLabel.MinimumSize = new System.Drawing.Size(690, 100);
-            this.infosLabel.Name = "infosLabel";
-            this.infosLabel.Size = new System.Drawing.Size(690, 100);
-            this.infosLabel.TabIndex = 15;
-            this.infosLabel.Text = "Dossier\r\nMail";
+            this.infosFolderLabel.AutoEllipsis = true;
+            this.infosFolderLabel.AutoSize = true;
+            this.infosFolderLabel.Font = new System.Drawing.Font("Berlin Sans FB", 10.125F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.infosFolderLabel.ForeColor = System.Drawing.Color.SteelBlue;
+            this.infosFolderLabel.Location = new System.Drawing.Point(5, 290);
+            this.infosFolderLabel.MaximumSize = new System.Drawing.Size(690, 50);
+            this.infosFolderLabel.MinimumSize = new System.Drawing.Size(690, 50);
+            this.infosFolderLabel.Name = "infosFolderLabel";
+            this.infosFolderLabel.Size = new System.Drawing.Size(690, 50);
+            this.infosFolderLabel.TabIndex = 15;
+            this.infosFolderLabel.Text = "Dossier";
+            this.infosFolderLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // 
+            // infosMailLabel
+            // 
+            this.infosMailLabel.AutoEllipsis = true;
+            this.infosMailLabel.AutoSize = true;
+            this.infosMailLabel.Font = new System.Drawing.Font("Berlin Sans FB", 10.125F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.infosMailLabel.ForeColor = System.Drawing.Color.SteelBlue;
+            this.infosMailLabel.Location = new System.Drawing.Point(5, 340);
+            this.infosMailLabel.MaximumSize = new System.Drawing.Size(690, 50);
+            this.infosMailLabel.MinimumSize = new System.Drawing.Size(690, 50);
+            this.infosMailLabel.Name = "infosMailLabel";
+            this.infosMailLabel.Size = new System.Drawing.Size(690, 50);
+            this.infosMailLabel.TabIndex = 16;
+            this.infosMailLabel.Text = "Mail";
+            this.infosMailLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
             // 
             // MailStorage
             // 
@@ -274,7 +291,8 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.AliceBlue;
             this.ClientSize = new System.Drawing.Size(700, 750);
-            this.Controls.Add(this.infosLabel);
+            this.Controls.Add(this.infosMailLabel);
+            this.Controls.Add(this.infosFolderLabel);
             this.Controls.Add(this.statusPictureBox);
             this.Controls.Add(this.currentFileLabel);
             this.Controls.Add(this.statusBackPictureBox);
@@ -321,7 +339,8 @@
         private System.Windows.Forms.PictureBox statusBackPictureBox;
         private System.Windows.Forms.Timer windowElementsRefresh;
         private System.Windows.Forms.Label currentFileLabel;
-        private System.Windows.Forms.Label infosLabel;
+        private System.Windows.Forms.Label infosFolderLabel;
+        private System.Windows.Forms.Label infosMailLabel;
     }
 }
 

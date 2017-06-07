@@ -354,7 +354,14 @@ namespace MailStorage
                     Globals.mainWindow.UpdateCurrentFile("Envoi du fichier\n" + localFile.fileName);
 
                     // Sends the file to the storage
-                    MailManager.SendMailToStorage(localFile.fileName + "::" + localFile.filePath + "::" + localFile.fileCreationDate + "::" + localFile.fileModificationDate, ConvertFileTo64(localFile));
+                    MailManager.SendMailToStorage(localFile.fileName +
+                                                  "::" +
+                                                  localFile.filePath +
+                                                  "::" +
+                                                  localFile.fileCreationDate +
+                                                  "::" +
+                                                  localFile.fileModificationDate,
+                                                  ConvertFileTo64(localFile));
                 }
             }
         }
@@ -459,6 +466,20 @@ namespace MailStorage
             var fileName = fileInformations.Name;
             var fileCreationDate = fileInformations.CreationTime;
             var fileModificationDate = fileInformations.LastWriteTime;
+            var fileMbSize = fileInformations.Length / 1024 / 1024;
+
+            // Checks if the file size is bigger than 10 MB
+            if (fileMbSize > 10)
+            {
+                // Displays the error message
+                MessageBox.Show("Le fichier \"" + fileName + "\" fait plus de 10 MO et ne peut être synchronisé avec la boite mail.\n\n" +
+                                "Veuillez le retirer du dossier racine pour éviter d'autres messages d'erreur.",
+                                "Fichier trop volumineux",
+                                MessageBoxButtons.OK,
+                                MessageBoxIcon.Warning);
+
+                return;
+            }
 
             // Checks if the file is already in the list
             if (Globals.LOCAL_FILES.All(a => a.filePath != relativePath))

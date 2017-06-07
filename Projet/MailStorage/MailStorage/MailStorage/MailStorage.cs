@@ -80,8 +80,8 @@ namespace MailStorage
         public async void InitializeWindow()
         {
             // Sets the infos label text
-            infosLabel.Text = "Dossier  " + Globals.ROOT_DIRECTORY + "\n" +
-                              "Mail     " + Globals.USER_MAIL_ADDRESS;
+            infosFolderLabel.Text = "Dossier  " + Globals.ROOT_DIRECTORY;
+            infosMailLabel.Text = "Mail      " + Globals.USER_MAIL_ADDRESS;
 
             // Updates the disk space value
             UpdateMailboxSpace();
@@ -105,11 +105,11 @@ namespace MailStorage
             if (!rootFolderWatcher.EnableRaisingEvents)
                 rootFolderWatcher.EnableRaisingEvents = true;
 
-            // Starts the first synchronisation
-            SynchronizeFiles(null, null);
-
             // Updates the index mail
             FilesManager.UpdateDirectoriesIndex();
+
+            // Starts the first synchronisation
+            SynchronizeFiles(null, null);
         }
 
         /// <summary>

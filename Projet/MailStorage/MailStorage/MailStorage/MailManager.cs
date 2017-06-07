@@ -22,7 +22,7 @@ namespace MailStorage
     /// </summary>
     static class MailManager
     {
-        public static readonly ImapClient imapCli = new ImapClient(new ProtocolLogger("imap.log"));       // The IMAP client
+        public static readonly ImapClient imapCli = new ImapClient();       // The IMAP client
 
         /// <summary>
         /// Connects the application to the IMAP server with the given data
@@ -90,18 +90,35 @@ namespace MailStorage
         /// <summary>
         /// Creates the storage folder in the mailbox
         /// </summary>
-        public static void CreateStorageFolder()
+        /// <returns>Returns the result of the folder creation</returns>
+        public static bool CreateStorageFolder()
         {
-            // Creates the MailStorage folder in the user's mailbox
-            foreach (var folder in imapCli.GetFolder(imapCli.PersonalNamespaces[0]).GetSubfolders().ToList())
+            // Tries to creates the folder
+            try
             {
-                // If the folder already exists, returns
-                if (folder.Name == Globals.MAILBOX_FOLDER)
-                    return;
-            }
+                if (imapCli.GetFolder(imapCli.PersonalNamespaces[0]).GetSubfolders().ToList().All(a => a.Name != Globals.MAILBOX_FOLDER))
+                {
+                    // Creates the MailStorage folder
+                    imapCli.GetFolder(imapCli.PersonalNamespaces[0]).Create(Globals.MAILBOX_FOLDER, true);
+                }
 
-            // Creates the folder
-            imapCli.GetFolder(imapCli.PersonalNamespaces[0]).Create(Globals.MAILBOX_FOLDER, true);
+                // Tries to open the MailStorage folder
+                imapCli.GetFolder("MailStorage");
+                
+                return true;
+            }
+            catch
+            {
+                // Displays the error message
+                MessageBox.Show("Une erreur est survenue.\n\n" +
+                                "Cette boite mail ne permet pas la création d'un dossier MailStorage pour le stockage de fichiers ou " +
+                                "le dossier n'est pas accessible dans la boite mail.\n\n" +
+                                "Veuillez séléctionner un autre serveur mail.",
+                    "Erreur de création de dossier",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                return false;
+            }
         }
 
         /// <summary>
@@ -208,7 +225,7 @@ namespace MailStorage
             var mailStorageFolder = imapCli.GetFolder("MailStorage");
 
             // Opens the mailstorage folder
-            for (;;)
+            while(true)
             {
                 try
                 {
