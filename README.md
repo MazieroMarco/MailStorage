@@ -6,7 +6,9 @@ L’avantage d’une telle solution permet de disposer d’une petite espace de 
 Cela offre aussi un avantage : il n’est pas nécessaire de créer un compte pour bénéficier de cet espace de stockage. En effet, une simple adresse mail suffit amplement.
 
 # Installation
-La dernière version du programme peut être téléchargée dans la section "Releases"
+La dernière version du programme peut être téléchargée dans la section "Releases" ou en cliquant sur le lien suivant :
+
+https://github.com/MazieroMarco/MailStorage/releases/download/1.0/MailStorageSetup.zip
 
 Il suffit de téléchager l'archive .zip, d'en extraire le programme d'installation et de lancer l'installation.
 
